@@ -6,6 +6,7 @@ from players.models import Player
 from games.models import Game
 
 class User(AbstractUser):
+    # ill add some more fields in the future
     pass
 
 User = settings.AUTH_USER_MODEL
