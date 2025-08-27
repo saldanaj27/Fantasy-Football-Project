@@ -1,4 +1,5 @@
 from django.db import models
+from django.conf import settings
 
 class Team(models.Model):
     name = models.CharField(max_length=100)
@@ -8,3 +9,10 @@ class Team(models.Model):
 
     def __str__(self):
         return f"{self.city} {self.name}"
+    
+class UserTeam(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    team = models.ForeignKey(Team, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ("user", "team")
