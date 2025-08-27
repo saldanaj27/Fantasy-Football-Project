@@ -2,6 +2,7 @@ from rest_framework import viewsets
 from teams.models import Team
 from players.models import Player
 from games.models import Game
+from users.models import User
 from stats.models import FootballPlayerGameStat
 
 from .serializers import (
@@ -9,7 +10,12 @@ from .serializers import (
     PlayerSerializer,
     GameSerializer,
     FootballPlayerGameStatSerializer,
+    UserSerializer
 )
+
+class UserViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
 
 class TeamViewSet(viewsets.ModelViewSet):
     queryset = Team.objects.all()

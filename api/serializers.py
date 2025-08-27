@@ -3,6 +3,12 @@ from teams.models import Team
 from players.models import Player
 from games.models import Game
 from stats.models import FootballPlayerGameStat
+from users.models import User
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ["id", "username", "email"]
 
 class TeamSerializer(serializers.ModelSerializer):
     class Meta: 
