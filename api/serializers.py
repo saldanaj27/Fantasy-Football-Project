@@ -8,29 +8,24 @@ from users.models import User
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ["id", "username", "email"]
+        fields = "__all__"
 
 class TeamSerializer(serializers.ModelSerializer):
     class Meta: 
         model = Team
-        fields = ['id', 'name', 'abbreviation', 'logo_url']
+        fields = "__all__"
 
 class PlayerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Player
-        fields = ['id', 'name', 'position', 'team', 'image_url']
+        fields = "__all__"
 
 class GameSerializer(serializers.ModelSerializer):
     class Meta:
         model = Game
-        fields = ['id', 'home_team', 'away_team', 'date', 'week', 'season', 'home_score', 'away_score']
+        fields = "__all__"
 
 class FootballPlayerGameStatSerializer(serializers.ModelSerializer):
     class Meta:
         model = FootballPlayerGameStat
-        fields = [
-            'player', 'game', 'rush_attempts', 'rush_yards', 
-            'fumbles', 'pass_yards', 'pass_completions', 'pass_attempts',
-            'touchdowns', 'interceptions', 'targets', 'receptions',
-            'receiving_yards', 'fantasy_points'
-            ]
+        fields = "__all__"
