@@ -12,4 +12,7 @@ router.register(r'stats', views.PlayerStatViewSet, basename='stat')
 
 urlpatterns = [
     path("", include(router.urls)),
+    path("auth/register/", views.RegisterView.as_view(), name="register"),
+    path("auth/login/", views.LoginView.as_view(), name="login"),
+    path("auth/logout/", views.LogoutView.as_view(), name="logout"),
 ]
