@@ -9,6 +9,7 @@ from . import views
 router = DefaultRouter()
 
 router.register(r'users', views.UserViewSet, basename='user')
+router.register(r'teams', views.TeamViewSet, basename='team')
 router.register(r'userteams', views.UserTeamViewSet, basename='userteam')
 router.register(r'players', views.PlayerViewSet, basename='player')
 router.register(r'userplayers', views.UserPlayerViewSet, basename='userplayer')
