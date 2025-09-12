@@ -5,8 +5,6 @@ class Team(models.Model):
     name = models.CharField(max_length=100)
     abbreviation = models.CharField(max_length=5)
     city = models.CharField(max_length=50)
-    color = models.CharField(max_length=15, default="#000000")
-    alternate_color = models.CharField(max_length=15, default="#ffffff")
     logo_url = models.URLField(blank=True, null=True)
 
     def __str__(self):
