@@ -22,6 +22,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-j(wbeb*lxntb&ewp#nd7zm79-^#xthrigzyin9fduzll#!8f4$'
+SPORTS_API_KEY = os.environ['SPORTS_API_KEY']
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
