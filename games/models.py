@@ -55,9 +55,9 @@ class Game(models.Model):
         return f"{self.away_team} @ {self.home_team} - Week {self.week}"
 
 
-class UserGame(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    game = models.ForeignKey(Game, on_delete=models.CASCADE)
+# class UserGame(models.Model):
+#     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+#     game = models.ForeignKey(Game, on_delete=models.CASCADE)
 
-    class Meta:
-        unique_together = ("user", "game")
+#     class Meta:
+#         unique_together = ("user", "game")

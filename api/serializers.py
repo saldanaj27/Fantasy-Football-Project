@@ -1,8 +1,8 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
-from teams.models import Team, UserTeam
-from players.models import Player, UserPlayer
-from games.models import Game, UserGame
+from teams.models import Team
+from players.models import Player
+from games.models import Game
 from stats.models import FootballPlayerGameStat
 from users.models import User
 
@@ -18,30 +18,30 @@ class TeamSerializer(serializers.ModelSerializer):
         model = Team
         fields = "__all__"
 
-class UserTeamSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = UserTeam
-        fields = "__all__"
+# class UserTeamSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = UserTeam
+#         fields = "__all__"
 
 class PlayerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Player
         fields = "__all__"
 
-class UserPlayerSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = UserPlayer
-        fields = "__all__"
+# class UserPlayerSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = UserPlayer
+#         fields = "__all__"
 
 class GameSerializer(serializers.ModelSerializer):
     class Meta:
         model = Game
         fields = "__all__"
 
-class UserGameSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = UserGame
-        fields = "__all__"
+# class UserGameSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = UserGame
+#         fields = "__all__"
 
 class FootballPlayerGameStatSerializer(serializers.ModelSerializer):
     class Meta:
