@@ -14,7 +14,6 @@ class FootballPlayerGameStat(models.Model):
     pass_yards = models.IntegerField(default=0)
     pass_completions = models.PositiveIntegerField(default=0)
     pass_attempts = models.PositiveIntegerField(default=0)
-    completion_pct = models.DecimalField(max_digits=5, decimal_places=2)
     sacks = models.PositiveIntegerField(default=0)
     passing_touchdowns = models.PositiveIntegerField(default=0)
     interceptions = models.PositiveIntegerField(default=0)
@@ -25,8 +24,8 @@ class FootballPlayerGameStat(models.Model):
     receiving_touchdowns = models.IntegerField(default=0)
 
     two_pt = models.PositiveIntegerField(default=0)
-
-    fantasy_points = models.IntegerField(default=0)
+    
+    # completion_pct + fantasy_points could be @property
 
     def __str__(self):
         return f"{self.player} - {self.game}"
