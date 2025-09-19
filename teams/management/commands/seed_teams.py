@@ -1,9 +1,7 @@
 import requests
 from django.core.management.base import BaseCommand
-from games.models import Game
 from teams.models import Team
 from django.conf import settings
-
 
 class Command(BaseCommand):
     help = "Seed Teams data from Sports API from specific season"
@@ -24,13 +22,13 @@ class Command(BaseCommand):
         
         data = response.json().get("response", [])
 
-        for item in data:
-            if item["name"] != 'NFC' or item["name"] != 'AFC':
-                team_id = item["id"]
-                name = item["name"]
-                city = item.get("city", "")
-                abbreviation = item.get("code", "")
-                logo_url = item.get("logo", "")
+        for team in data:
+            if team["name"] != 'NFC' or team["name"] != 'AFC':
+                team_id = team["id"]
+                name = team["name"]
+                city = team.get("city", "") # default is empty string
+                abbreviation = team.get("code", "")
+                logo_url = team.get("logo", "")
                 
                 Team.objects.update_or_create(
                     id=team_id,
