@@ -1,5 +1,4 @@
 from django.db import models
-from teams.models import Team
 from django.conf import settings
 
 class Player(models.Model):
@@ -16,7 +15,6 @@ class Player(models.Model):
     number = models.IntegerField(default=0)
     college = models.CharField(max_length=100)
     position = models.CharField(max_length=20, choices=POSITION_CHOICES)
-    team = models.ForeignKey(Team, on_delete=models.CASCADE, related_name='players')
     image_url = models.URLField(blank=True, null=True)
 
     def __str__(self):
