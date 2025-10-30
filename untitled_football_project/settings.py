@@ -33,8 +33,6 @@ ALLOWED_HOSTS = [
     '0.0.0.0'
 ]
 
-AUTH_USER_MODEL = "users.User"
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -42,7 +40,6 @@ INSTALLED_APPS = [
     'players',
     'games',
     'stats',
-    'users',
     'rest_framework',
     'django.contrib.admin',
     'django.contrib.auth',
