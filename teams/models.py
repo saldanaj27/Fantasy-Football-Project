@@ -1,6 +1,5 @@
 from django.db import models
 from django.conf import settings
-from players.models import Player
 
 class Team(models.Model):
     name = models.CharField(max_length=100)
@@ -10,13 +9,6 @@ class Team(models.Model):
 
     def __str__(self):
         return f"{self.name}"
-    
-
-class Team_Players(models.Model):
-    player = models.ForeignKey(Player, on_delete=models.CASCADE)
-    team = models.ForeignKey(Team, on_delete=models.CASCADE)
-
-
 
 # * Model will be used in future versions *
 # class UserTeam(models.Model):
