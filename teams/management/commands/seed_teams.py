@@ -1,6 +1,5 @@
 from django.core.management.base import BaseCommand
 from teams.models import Team
-from django.conf import settings
 import nflreadpy as nfl
 
 class Command(BaseCommand):
