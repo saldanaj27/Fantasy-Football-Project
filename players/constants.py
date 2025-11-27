@@ -36,6 +36,13 @@ POSITION_CHOICES = [
     ("WR", "Wide Receiver"),
 ]
 
+OFFENSIVE_POS = [
+    'QB',
+    'RB',
+    'WR',
+    'TE',
+]
+
 STATUS = [
     ("ACT", "Active"),
     ("CUT", "Cut"),
