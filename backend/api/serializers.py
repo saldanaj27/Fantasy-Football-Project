@@ -15,6 +15,10 @@ class PlayerSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 class GameSerializer(serializers.ModelSerializer):
+    # change fields from ID to actual objects
+    home_team = TeamSerializer(read_only=True)
+    away_team = TeamSerializer(read_only=True)
+
     class Meta:
         model = Game
         fields = "__all__"
