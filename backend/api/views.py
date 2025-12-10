@@ -41,7 +41,7 @@ class GameViewSet(viewsets.ModelViewSet):
         return qs
     
     # path to get current week (/current_week)
-    @action(detail=False, methods=['get'])
+    @action(detail=False, methods=['get'], url_path='currentWeek')
     def current_week(self, request):
         today = timezone.now().date()
 
