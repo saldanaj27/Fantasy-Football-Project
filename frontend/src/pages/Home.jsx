@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { getCurrentWeekGames } from '../api/games'
 import GameBox from '../components/GameBox'
+import './Home.css'
 
 // home page should show all games
 export default function Home() {
@@ -19,14 +20,14 @@ export default function Home() {
   
   return (
     <div>
-      <h1>Fantasy Football</h1>
-      <p>Welcome!</p>
+      <div className="home-container">
+      <h1 className="home-title">Fantasy Football</h1>
+      <p className="home-subtitle">Welcome!</p>
 
-      <div>
-        <h2>NFL Week {week} Games</h2>
+      <h2 className="week-title">NFL Week {week} Games</h2>
         {/* for each game in current week, post the GameBox component */}
         {/* want this div to be a table like structure */}
-        <div>
+        <div className="games-grid">
           {games.map((game) => (
             <GameBox key={game.id} game={game}/>
           ))}
