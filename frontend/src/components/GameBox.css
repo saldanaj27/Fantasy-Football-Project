@@ -13,6 +13,15 @@
   transform: scale(1.03);
 }
 
+.gamebox-container.finished-game {
+  background-color: #0f766e;
+  color: #ecfeff;
+}
+
+.gamebox-container.finished-game:hover {
+  background-color: #115e59;
+}
+
 .gamebox-title {
   font-size: 20px;
   font-weight: 600;
@@ -26,11 +35,13 @@
   text-align: center;
 }
 
-.finished-game {
-  background-color: green;
-  color: #000;
+.gamebox-container.finished-game .gamebox-text {
+  display: none;
 }
 
-.finished-game:hover {
-  background-color: lightgreen;
+.score {
+  font-size: 18px;
+  font-weight: 700;
+  text-align: center;
+  margin-top: 6px;
 }
