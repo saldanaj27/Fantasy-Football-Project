@@ -3,19 +3,7 @@ import { useNavigate } from 'react-router-dom'
 
 export default function GameBox({ game }) {
   const navigate = useNavigate()
-   const isFinished = game.home_score !== null
-
-  // const gameBoxContainer = "gamebox-container"
-  // const gameBoxTitle = "gamebox-title"
-  // const gameBoxText = "gamebox-text"
-  // const score = "score"
-
-  // if (game.home_score !== null) {
-  //   gameBoxContainer += ' finished-game'
-  //   gameBoxTitle += ' finished-game'
-  //   gameBoxText += ' finished-game'
-  //   score += ' finished-game'
-  // }
+  const isFinished = game.home_score !== null
 
   const handleClick = () => {
     navigate(`/game/${game.id}`)
