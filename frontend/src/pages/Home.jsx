@@ -10,8 +10,15 @@ export default function Home() {
 
   const getCurrentWeek = async () => {
     const data = await getCurrentWeekGames()
-    setWeek(data[0].week)
-    setGames(data)
+
+    const sortedGames = [...data].sort((a, b) => {
+      const dateA = new Date(`${a.date}T${a.time}`)
+      const dateB = new Date(`${b.date}T${b.time}`)
+      return dateA - dateB
+    })
+
+    setWeek(sortedGames[0]?.week)
+    setGames(sortedGames)
   }
 
   useEffect(() => {
