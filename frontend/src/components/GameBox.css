@@ -25,3 +25,12 @@
   font-size: 14px;
   text-align: center;
 }
+
+.finished-game {
+  background-color: green;
+  color: #000;
+}
+
+.finished-game:hover {
+  background-color: lightgreen;
+}
