@@ -9,3 +9,8 @@ export async function getCurrentWeekGames() {
   const response = await api.get(`/games/currentWeek/`)
   return response.data
 }
+
+export const getGameById = async (gameId) => {
+  const response = await api.get(`/games/${gameId}/`)
+  return response.data
+}
