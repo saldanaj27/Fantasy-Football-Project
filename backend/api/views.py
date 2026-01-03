@@ -5,12 +5,10 @@ from rest_framework.response import Response
 from teams.models import Team
 from players.models import Player
 from games.models import Game
-from stats.models import FootballPlayerGameStat
 from .serializers import (
     TeamSerializer,
     PlayerSerializer,
     GameSerializer,
-    FootballPlayerGameStatSerializer,
 )
 
 class TeamViewSet(viewsets.ModelViewSet):
@@ -57,8 +55,3 @@ class GameViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(games, many=True)
         
         return Response(serializer.data)
-
-
-class PlayerStatViewSet(viewsets.ModelViewSet):
-    queryset = FootballPlayerGameStat.objects.all()
-    serializer_class = FootballPlayerGameStatSerializer
