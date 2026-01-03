@@ -87,7 +87,7 @@ class Command(BaseCommand):
             rush_yds = row['rushing_yards']
             rush_tds = row['rushing_tds']
             receptions = row['receptions']
-            targets = row['targets']
+            # targets = row['targets']
             rec_yds = row['receiving_yards']
             rec_tds = row['receiving_tds']
             spec_teams_tds = row['special_teams_tds']
@@ -117,7 +117,7 @@ class Command(BaseCommand):
                     'sacks': sacks,
                     'fumbles': fumbles,
                     'fumbles_lost': fumbles_lost,
-                    'targets': targets,
+                    # 'targets': targets,
                     'receptions': receptions,
                     'receiving_yards': rec_yds,
                     'receiving_touchdowns': rec_tds,

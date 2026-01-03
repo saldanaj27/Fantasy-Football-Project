@@ -52,7 +52,6 @@ class FootballTeamGameStat(models.Model):
     fumbles = models.PositiveIntegerField(default=0)
     fumbles_lost = models.PositiveIntegerField(default=0)
 
-    targets = models.PositiveIntegerField(default=0)
     receptions = models.PositiveIntegerField(default=0)
     receiving_yards = models.IntegerField(default=0)
     receiving_touchdowns = models.IntegerField(default=0)
@@ -71,3 +70,15 @@ class FootballTeamGameStat(models.Model):
     fg_attempts = models.PositiveIntegerField(default=0)
     fg_made = models.PositiveIntegerField(default=0)
 
+    @property
+    def completion_percentage(self):
+        return self.pass_completions * 100 / self.pass_attempts
+    
+    @property
+    def pass_avg(self):
+        return self.pass_yards / self.pass_attempts
+
+    @property
+    def rush_avg(self):
+        return self.rush_yards / self.rush_attempts
+    
