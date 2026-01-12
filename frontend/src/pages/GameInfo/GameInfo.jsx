@@ -1,8 +1,8 @@
 import { useParams } from "react-router-dom"
 import { useEffect, useState } from "react"
-import { getGameById } from "../api/games"
-import TeamStatsSection from "../components/TeamStatsSection"
-import GameTitle from "../components/GameTitle"
+import { getGameById } from "../../api/games"
+import TeamStatsSection from "./components/TeamStatsSection"
+import GameTitle from "./components/GameTitle"
 
 export default function GameInfo() {
   const { gameId } = useParams()

@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom"
 import Home from "./pages/Home"
-import GameInfo from "./pages/GameInfo"
+import GameInfo from "./pages/GameInfo/GameInfo"
 
 export default function App() {
   return (

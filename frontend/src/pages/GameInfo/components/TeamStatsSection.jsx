@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { getRecentStats } from '../api/analytics'
+import { getRecentStats } from '../../../api/analytics'
 import StatCard from "./StatCard"
 
 export default function TeamStatsSection({ team, numGames }) {
