@@ -11,7 +11,11 @@ export default function TeamStatsSection({ team, numGames }) {
       setTeamStats(data)
     }
     fetchTeamData()
-  }, [])
+  }, [numGames, team.id])
+
+  if (!teamStats) {
+    return <div>Loading...</div>
+  }
 
   return (
     <div>
