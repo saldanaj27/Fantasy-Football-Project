@@ -1,10 +1,12 @@
+import "../css/StatCard.css"
+
 export default function StatCard({ title, value, subtitle }) {
 
   return (
-    <div>
-      <div>{title}</div>
-      <div>{value}</div>
-      {subtitle && <div>{subtitle}</div>}
+    <div className="stat-card">
+      <div className="stat-card-title">{title}</div>
+      <div className="stat-card-value">{value}</div>
+      {subtitle && <div className="stat-card-subtitle">{subtitle}</div>}
     </div>
   )
 }
