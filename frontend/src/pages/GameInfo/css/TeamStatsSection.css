@@ -1,0 +1,98 @@
+.team-stats-section {
+  flex: 1;
+}
+
+.team-header {
+  background: linear-gradient(to bottom right, #3b82f6, #2563eb);
+  color: white;
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.team-header h3 {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 0.25rem;
+}
+
+.team-header p {
+  color: #bfdbfe;
+  font-size: 0.875rem;
+  margin: 0;
+}
+
+.offensive-stats {
+  margin-bottom: 1.5rem;
+}
+
+.section-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.section-title-bar {
+  width: 4px;
+  height: 1.5rem;
+  background-color: #3b82f6;
+  border-radius: 2px;
+}
+
+.section-title-bar.defense {
+  background-color: #ef4444;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.turnover-differential {
+  background-color: #fef3c7;
+  border: 1px solid #fcd34d;
+  border-radius: 0.5rem;
+  padding: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.turnover-differential-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.turnover-differential-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151;
+}
+
+.turnover-differential-value {
+  font-size: 1.25rem;
+  font-weight: bold;
+}
+
+.turnover-differential-value.positive {
+  color: #16a34a;
+}
+
+.turnover-differential-value.negative {
+  color: #dc2626;
+}
+
+.turnover-differential-details {
+  font-size: 0.75rem;
+  color: #6b7280;
+  margin-top: 0.25rem;
+}
+
+.defense-stats {
+  /* Container for defensive stats */
+}
