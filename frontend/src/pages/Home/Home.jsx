@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
-import { getCurrentWeekGames } from '../api/games'
-import GameBox from '../components/GameBox'
+import { getCurrentWeekGames } from '../../api/games'
+import GameBox from './components/GameBox'
 import './Home.css'
 
 // home page should show all games
