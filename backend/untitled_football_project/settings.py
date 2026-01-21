@@ -86,6 +86,26 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:5173",
 ]
 
+CACHES = {
+    'default': {
+        'BACKEND': 'django_redis.cache.RedisCache',
+        'LOCATION': 'redis://127.0.0.1:6379/1',
+        'OPTIONS': {
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+        },
+        'KEY_PREFIX': 'football_stats',
+        'TIMEOUT': 300,  # 5 minutes default
+    }
+}
+
+CACHE_TTL = {
+    'games': 60 * 5,        # 5 minutes
+    'teams': 60 * 60,       # 1 hour
+    'players': 60 * 60,     # 1 hour
+    'team_stats': 60 * 10,  # 10 minutes
+    'analytics': 60 * 15,   # 15 minutes
+}
+
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
