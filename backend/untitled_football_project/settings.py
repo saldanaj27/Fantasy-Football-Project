@@ -86,6 +86,13 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:5173",
 ]
 
+
+
+"""
+Cache Information (Redis)
+- Time-to-Live (TTL) - How long content is cached (in seconds)
+"""
+
 CACHES = {
     'default': {
         'BACKEND': 'django_redis.cache.RedisCache',
@@ -99,11 +106,53 @@ CACHES = {
 }
 
 CACHE_TTL = {
-    'games': 60 * 5,        # 5 minutes
-    'teams': 60 * 60,       # 1 hour
-    'players': 60 * 60,     # 1 hour
-    'team_stats': 60 * 10,  # 10 minutes
-    'analytics': 60 * 15,   # 15 minutes
+    'games': 60 * 5,        
+    'teams': 60 * 60,       
+    'players': 60 * 60,     
+    'team_stats': 60 * 10,  
+    'analytics': 60 * 15,   
+}
+
+
+
+"""
+Scheduled Jobs (Celery)
+"""
+
+CELERY_BROKER_URL = 'redis://localhost:6379/0'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'America/New_York'  # Adjust to your timezone
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
+        },
+        'file': {
+            'class': 'logging.FileHandler',
+            'filename': 'celery.log',
+            'formatter': 'verbose',
+        },
+    },
+    'loggers': {
+        'stats.tasks': {
+            'handlers': ['console', 'file'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+    },
 }
 
 # Database
