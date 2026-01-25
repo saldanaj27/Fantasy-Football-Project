@@ -92,7 +92,6 @@ CORS_ALLOWED_ORIGINS = [
 Cache Information (Redis)
 - Time-to-Live (TTL) - How long content is cached (in seconds)
 """
-
 CACHES = {
     'default': {
         'BACKEND': 'django_redis.cache.RedisCache',
@@ -118,7 +117,6 @@ CACHE_TTL = {
 """
 Scheduled Jobs (Celery)
 """
-
 CELERY_BROKER_URL = 'redis://localhost:6379/0'
 CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
 CELERY_ACCEPT_CONTENT = ['json']
