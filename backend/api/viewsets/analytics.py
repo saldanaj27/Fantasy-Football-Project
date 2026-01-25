@@ -21,31 +21,38 @@ class AnalyticsViewSet(viewsets.ViewSet):
         if not team_id:
             return Response({'Error': '\'team_id\' is required'}, status=400)
         
-        # coureate cache key
+        # Create cache key
         cache_key = f'recent_stats_{team_id}_{num_games}'
         
-        # try to get from cache
+        # Try to get from cache
         cached_data = cache.get(cache_key)
         if cached_data:
             return Response(cached_data)
         
-        # if not in cache, fetch from database
+        # If not in cache, fetch from database
         query = FootballTeamGameStat.objects.filter(team_id=team_id)
         stats = query.order_by('-game__date')[:num_games]
         
+        # Aggregate stats from query
         past_stats = stats.aggregate(
+            # Passing stats
             pass_att=Avg('pass_attempts'),
             pass_yds=Avg('pass_yards'),
             pass_tds=Avg('pass_touchdowns'),
             completion_pct=Avg(F('pass_completions') * 100.0 / F('pass_attempts')),
+
+            # Rushing stats
             rush_att=Avg('rush_attempts'),
             rush_yds=Avg('rush_yards'),
             rush_tds=Avg('rush_touchdowns'),
+
+            # General + Defensive stats
             total_yards=Avg(F('rush_yards') + F('pass_yards')),
             off_turnovers_total=Sum(F('interceptions') + F('fumbles_lost')),
             def_turnovers_total=Sum(F('def_interceptions') + F('def_fumbles_forced'))
         )
         
+        # Calculate points per average
         games_data = []
         for stat in stats:
             game = stat.game
@@ -57,6 +64,7 @@ class AnalyticsViewSet(viewsets.ViewSet):
         
         points_avg = sum(games_data) / len(games_data) if games_data else 0
         
+        # Initialize response data
         response_data = {
             'team_id': team_id,
             'passing': {
@@ -76,20 +84,19 @@ class AnalyticsViewSet(viewsets.ViewSet):
             'points_per_game': round(points_avg, 2),
         }
         
+        # Store in cache
         cache.set(cache_key, response_data, settings.CACHE_TTL['analytics'])
         
         return Response(response_data)
     
 
     """
-    GET --> Yards allowed by specific position group over last N games
+    GET --> Player Stats (yards, receptions, touchdowns, etc.) allowed by specific position group over last N games
     Query params: 'team_id' (required), 'games' (default=3), 'position' (default='RB')
     Supported positions: RB, WR, TE, QB
     """
     @action(detail=False, methods=['get'], url_path='defense-allowed')
     def defense_allowed(self, request):
-        # TODO can't go over finished games
-
         team_id = request.query_params.get('team_id')
         num_games = int(request.query_params.get('games', 3))
         position = request.query_params.get('position', 'RB')
@@ -97,38 +104,48 @@ class AnalyticsViewSet(viewsets.ViewSet):
         if not team_id:
             return Response({'Error': '\'team_id\' is required'}, status=400)
         
+        # Create cache key
+        cache_key = f'defense_allowed_{team_id}_{num_games}_{position}'
+        
+        # Try to get from cache
+        cached_data = cache.get(cache_key)
+        if cached_data:
+            return Response(cached_data)
+        
+        # If not in cache, fetch from database
         valid_positions = ['RB', 'WR', 'TE', 'QB']
         if position not in valid_positions:
             return Response({
                 'Error': f'Invalid position. Must be one of: {", ".join(valid_positions)}'
             }, status=400)
 
-        # get last N games
+        # Get game information using params (# of games, position, team)
         games = (Game.objects
                 .filter(Q(home_team_id=team_id) | Q(away_team_id=team_id))
                 .exclude(home_score=None)
                 .order_by('-date')[:num_games]
                 .values_list('id', flat=True))
         
-        # get opponent stats from found games and of the specified position
+        # Get opponent stats using params
         opponent_stats = (FootballPlayerGameStat.objects
                          .filter(game_id__in=games)
                          .filter(player__position=position)
                          .exclude(player__team_id=team_id))
 
+        # Aggregate stats from query
         aggregate_stats = opponent_stats.aggregate(
-            # rushing
+            # Rushing stats
             rush_att=Sum('rush_attempts'),
             rush_yds=Sum('rush_yards'),
             rush_tds=Sum('rush_touchdowns'),
 
-            # receiving (for RB, WR, TE)
+            # Receiving stats (for RB, WR, TE)
             targets=Sum('targets'),
             rec_receptions=Sum('receptions'),
             rec_yds=Sum('receiving_yards'),
             rec_tds=Sum('receiving_touchdowns'),
 
-            # passing (for QB)
+            # Passing stats (for QB)
             pass_att=Sum('pass_attempts'),
             pass_comp=Sum('pass_completions'),
             pass_yds=Sum('pass_yards'),
@@ -136,11 +153,12 @@ class AnalyticsViewSet(viewsets.ViewSet):
             interceptions=Sum('interceptions'),
             sacks=Sum('sacks'),
 
+            # Other stats
             fantasy_pts=Sum('fantasy_points_ppr'),
             total_yards_allowed=Sum(F('rush_yards') + F('receiving_yards') + F('pass_yards')),
         )
         
-        
+        # Initialize response data
         response_data = {
             'team_id': team_id,
             'position': position,
@@ -183,5 +201,8 @@ class AnalyticsViewSet(viewsets.ViewSet):
         # Add fantasy points and total yards for all positions
         response_data['fantasy_points'] = round((aggregate_stats['fantasy_pts'] or 0) / num_games, 2)
         response_data['total_yards_allowed'] = round((aggregate_stats['total_yards_allowed'] or 0) / num_games, 2)
+        
+        # Store in cache
+        cache.set(cache_key, response_data, settings.CACHE_TTL['analytics'])
         
         return Response(response_data)
