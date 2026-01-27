@@ -1,12 +1,13 @@
-import { useParams } from "react-router-dom"
+import { useParams, useNavigate } from "react-router-dom"
 import { useEffect, useState } from "react"
 import { getGameById } from "../../api/games"
 import TeamStatsSection from "./components/TeamStatsSection"
 import GameTitle from "./components/GameTitle"
-import "./css/GameInfo.css"
+import "./styles/GameInfo.css"
 
 export default function GameInfo() {
   const { gameId } = useParams()
+  const navigate = useNavigate()
   const [game, setGame] = useState(null)
   const [numGames, setNumGames] = useState(3)
 
@@ -30,6 +31,9 @@ export default function GameInfo() {
   return (
     <div className="game-info-container">
       <div className="game-info-content">
+        <button className="back-button" onClick={() => navigate('/')}>
+          Back
+        </button>
         <GameTitle game={game}/>
 
         <div className="games-filter">
