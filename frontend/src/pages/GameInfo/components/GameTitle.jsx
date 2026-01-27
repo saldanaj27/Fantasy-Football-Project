@@ -1,4 +1,4 @@
-import "../css/GameTitle.css"
+import "../styles/GameTitle.css"
 
 export default function GameTitle({game}) {
 

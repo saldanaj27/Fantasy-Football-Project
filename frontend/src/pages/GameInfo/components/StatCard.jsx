@@ -1,4 +1,4 @@
-import "../css/StatCard.css"
+import "../styles/StatCard.css"
 
 export default function StatCard({ title, value, subtitle }) {
 
