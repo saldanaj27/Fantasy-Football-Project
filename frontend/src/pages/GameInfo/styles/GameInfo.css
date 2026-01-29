@@ -76,6 +76,12 @@
   gap: 1.5rem;
 }
 
+.team-column {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
 .team-divider {
   display: flex;
   align-items: center;

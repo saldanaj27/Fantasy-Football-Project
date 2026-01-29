@@ -2,6 +2,7 @@ import { useParams, useNavigate } from "react-router-dom"
 import { useEffect, useState } from "react"
 import { getGameById } from "../../api/games"
 import TeamStatsSection from "./components/TeamStatsSection"
+import PlayerStatsSection from "./components/PlayerStatsSection"
 import GameTitle from "./components/GameTitle"
 import "./styles/GameInfo.css"
 
@@ -50,13 +51,19 @@ export default function GameInfo() {
         </div>
 
         <div className="teams-comparison">
-          <TeamStatsSection team={game.home_team} numGames={numGames}/>
+          <div className="team-column">
+            <TeamStatsSection team={game.home_team} numGames={numGames}/>
+            <PlayerStatsSection team={game.home_team} numGames={numGames}/>
+          </div>
 
           <div className="team-divider">
             <div className="team-divider-line"></div>
           </div>
 
-          <TeamStatsSection team={game.away_team} numGames={numGames}/>    
+          <div className="team-column">
+            <TeamStatsSection team={game.away_team} numGames={numGames}/>
+            <PlayerStatsSection team={game.away_team} numGames={numGames}/>
+          </div>
         </div>
       </div>
     </div>
