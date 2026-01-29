@@ -1,0 +1,49 @@
+.player-stats-section {
+  margin-top: 1.5rem;
+}
+
+.section-title-bar.player {
+  background-color: #8b5cf6;
+}
+
+.position-tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 0.5rem;
+}
+
+.position-tab {
+  padding: 0.5rem 1rem;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-weight: 500;
+  color: #6b7280;
+  border-radius: 0.375rem;
+  transition: all 0.2s;
+}
+
+.position-tab:hover {
+  background-color: #f3f4f6;
+  color: #374151;
+}
+
+.position-tab.active {
+  background-color: #3b82f6;
+  color: white;
+}
+
+.player-cards-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.no-players {
+  padding: 1rem;
+  text-align: center;
+  color: #6b7280;
+  font-style: italic;
+}

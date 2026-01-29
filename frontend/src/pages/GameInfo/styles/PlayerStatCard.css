@@ -1,0 +1,125 @@
+.player-stat-card {
+  background-color: #f9fafb;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  transition: all 0.2s;
+}
+
+.player-stat-card:hover {
+  background-color: #f3f4f6;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.player-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.player-name {
+  font-weight: 600;
+  color: #111827;
+  flex: 1;
+}
+
+.games-played {
+  font-size: 0.75rem;
+  color: #6b7280;
+  background-color: #e5e7eb;
+  padding: 0.125rem 0.5rem;
+  border-radius: 0.25rem;
+}
+
+.player-stats-grid {
+  display: grid;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.player-stats-grid.qb {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.player-stats-grid.rb {
+  grid-template-columns: repeat(5, 1fr);
+}
+
+.player-stats-grid.wr-te {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.stat-label {
+  font-size: 0.7rem;
+  color: #6b7280;
+  text-transform: uppercase;
+}
+
+.stat-value {
+  font-weight: 600;
+  font-size: 1rem;
+  color: #111827;
+}
+
+.fantasy-points-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 0.75rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.fantasy-label {
+  font-size: 0.875rem;
+  color: #4b5563;
+}
+
+.fantasy-value {
+  font-weight: 700;
+  font-size: 1.125rem;
+  color: #8b5cf6;
+}
+
+/* Position badges matching PositionStatCard */
+.position-badge {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.125rem 0.5rem;
+  border-radius: 0.25rem;
+}
+
+.position-badge.qb {
+  background-color: #dcfce7;
+  color: #166534;
+}
+
+.position-badge.rb {
+  background-color: #fee2e2;
+  color: #991b1b;
+}
+
+.position-badge.wr {
+  background-color: #dbeafe;
+  color: #1e40af;
+}
+
+.position-badge.te {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .player-stats-grid.qb,
+  .player-stats-grid.rb,
+  .player-stats-grid.wr-te {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
