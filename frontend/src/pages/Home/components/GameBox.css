@@ -1,47 +1,147 @@
-.gamebox-container {
-  background-color: #1f2937;
-  color: white;
-  padding: 16px;
-  border-radius: 12px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-  transition: all 0.2s ease;
+/* ESPN-Style Scoreboard Card */
+.gamebox {
+  background-color: #1a1a1a;
+  border-radius: 0.5rem;
+  overflow: hidden;
   cursor: pointer;
+  transition: all 0.2s;
+  border: 1px solid #2a2a2a;
 }
 
-.gamebox-container:hover {
-  background-color: #374151;
-  transform: scale(1.03);
+.gamebox:hover {
+  border-color: #c00;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
 }
 
-.gamebox-container.finished-game {
-  background-color: #0f766e;
-  color: #ecfeff;
+/* Header with status and time */
+.gamebox-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0.75rem;
+  background-color: #111;
+  border-bottom: 1px solid #2a2a2a;
 }
 
-.gamebox-container.finished-game:hover {
-  background-color: #115e59;
-}
-
-.gamebox-title {
-  font-size: 20px;
-  font-weight: 600;
-  margin-bottom: 8px;
-  text-align: center;
-}
-
-.gamebox-text {
-  color: #d1d5db;
-  font-size: 14px;
-  text-align: center;
-}
-
-.gamebox-container.finished-game .gamebox-text {
-  display: none;
-}
-
-.score {
-  font-size: 18px;
+.game-status {
+  font-size: 0.7rem;
   font-weight: 700;
-  text-align: center;
-  margin-top: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+}
+
+.game-status.final {
+  background-color: #333;
+  color: #888;
+}
+
+.game-status.upcoming {
+  background-color: rgba(204, 0, 0, 0.2);
+  color: #ff6b6b;
+}
+
+.game-status.live {
+  background-color: #c00;
+  color: white;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+.game-time {
+  font-size: 0.75rem;
+  color: #666;
+}
+
+/* Team Rows */
+.team-row {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem;
+  border-bottom: 1px solid #222;
+}
+
+.team-row:last-child {
+  border-bottom: none;
+}
+
+.team-row.winner {
+  background-color: rgba(204, 0, 0, 0.1);
+}
+
+.team-abbr {
+  font-size: 1rem;
+  font-weight: 700;
+  color: white;
+  width: 50px;
+}
+
+.team-name {
+  flex: 1;
+  font-size: 0.8rem;
+  color: #888;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.team-score {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: white;
+  min-width: 40px;
+  text-align: right;
+}
+
+.team-row.winner .team-score {
+  color: #c00;
+}
+
+.team-score.pending {
+  font-size: 0.875rem;
+  color: #555;
+  font-weight: 600;
+}
+
+/* Record/Spread (optional future use) */
+.team-record {
+  font-size: 0.7rem;
+  color: #555;
+  margin-left: 0.5rem;
+}
+
+/* Footer with venue/weather */
+.gamebox-footer {
+  padding: 0.5rem 0.75rem;
+  background-color: #111;
+  border-top: 1px solid #2a2a2a;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.game-venue {
+  font-size: 0.7rem;
+  color: #555;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.game-weather {
+  font-size: 0.7rem;
+  color: #555;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.weather-temp {
+  color: #888;
 }

@@ -40,3 +40,40 @@ export async function getDefenseAllowed(numGames, teamId, position) {
   const response = await api.get(`analytics/defense-allowed/?games=${numGames}&team_id=${teamId}&position=${position}`)
   return response.data
 }
+
+/*
+  Output of /api/analytics/player-stats API:
+  Param: games (default=3), team_id
+
+  {
+    'team_id': <team_id>,
+    'games_analyzed': <int>,
+    'players': {
+      'QB': [{ player_id, name, position, stats: {...}, games_played }],
+      'RB': [...],
+      'WR': [...],
+      'TE': [...]
+    }
+  }
+*/
+export async function getPlayerStats(numGames, teamId) {
+  const response = await api.get(`analytics/player-stats/?games=${numGames}&team_id=${teamId}`)
+  return response.data
+}
+
+/*
+  Output of /api/analytics/usage-metrics API:
+  Param: games (default=3), team_id
+
+  {
+    'team_id': <team_id>,
+    'games_analyzed': <int>,
+    'pass_run_split': { pass_attempts, rush_attempts, pass_percentage, rush_percentage },
+    'target_share': [{ player_id, name, position, targets, target_share_percentage }],
+    'carry_share': [{ player_id, name, position, rush_attempts, carry_share_percentage }]
+  }
+*/
+export async function getUsageMetrics(numGames, teamId) {
+  const response = await api.get(`analytics/usage-metrics/?games=${numGames}&team_id=${teamId}`)
+  return response.data
+}

@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react'
+import { Link } from 'react-router-dom'
 import { getCurrentWeekGames, getGames } from '../../api/games'
 import GameBox from './components/GameBox'
 import './Home.css'
 
-// home page should show all games
 export default function Home() {
   const [week, setWeek] = useState(1)
   const [season, setSeason] = useState(2025)
@@ -53,42 +53,57 @@ export default function Home() {
       fetchGames()
     }
   }, [week, season])
-  
-  return (
-    <div>
-      <div className="home-container">
-        <h1 className="home-title">Fantasy Football</h1>
-        <p className="home-subtitle">Welcome!</p>
 
-        <div className="week-selector">
-          <label htmlFor="week-select">Select Week:</label>
-          <select
-            id="week-select"
-            value={week}
-            onChange={(e) => setWeek(Number(e.target.value))}
-          >
-            {[...Array(22)].map((_, i) => (
-              <option key={i + 1} value={i + 1}>
-                Week {i + 1}
-              </option>
-            ))}
-          </select>
+  return (
+    <div className="home-page">
+      {/* Top Navigation */}
+      <nav className="top-nav">
+        <span className="brand">FANTASY FOOTBALL</span>
+        <div className="nav-links">
+          <Link to="/" className="nav-link active">Scores</Link>
+          <Link to="/players" className="nav-link">Players</Link>
+        </div>
+      </nav>
+
+      {/* Main Content */}
+      <div className="home-content">
+        {/* Week Selector Bar */}
+        <div className="week-bar">
+          <h2 className="week-bar-title">NFL Week {week}</h2>
+          <div className="week-selector">
+            <label htmlFor="week-select">Week:</label>
+            <select
+              id="week-select"
+              value={week}
+              onChange={(e) => setWeek(Number(e.target.value))}
+            >
+              {[...Array(22)].map((_, i) => (
+                <option key={i + 1} value={i + 1}>
+                  {i + 1}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
 
-        <h2 className="week-title">NFL Week {week} Games</h2>
-
+        {/* Games Grid */}
         {loading ? (
-          <div className="loading-text">Loading games...</div>
+          <div className="loading-container">
+            <div className="loading-spinner"></div>
+          </div>
         ) : games.length > 0 ? (
           <div className="games-grid">
             {games.map((game) => (
-              <GameBox key={game.id} game={game}/>
+              <GameBox key={game.id} game={game} />
             ))}
           </div>
         ) : (
-          <div className="no-games-text">No games found for this week.</div>
+          <div className="no-games">
+            <div className="no-games-icon">🏈</div>
+            <div className="no-games-text">No games scheduled for Week {week}</div>
+          </div>
         )}
       </div>
     </div>
-  );
+  )
 }

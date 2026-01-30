@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom"
 import Home from "./pages/Home/Home"
 import GameInfo from "./pages/GameInfo/GameInfo"
+import Players from "./pages/Players/Players"
 
 export default function App() {
   return (
@@ -8,6 +9,7 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/game/:gameId" element={<GameInfo />} />
+        <Route path="/players" element={<Players />} />
       </Routes>
     </BrowserRouter>
   )
