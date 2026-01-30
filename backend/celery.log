@@ -1,0 +1,150 @@
+INFO 2026-01-25 00:34:21,684 tasks Successfully seeded stats
+INFO 2026-01-25 00:34:21,688 tasks Cache cleared after seeding stats
+INFO 2026-01-25 00:34:33,477 tasks Successfully seeded games
+INFO 2026-01-25 00:45:00,072 tasks Invalidated cache for 6 teams
+INFO 2026-01-25 01:08:58,305 tasks Invalidated cache for 6 teams
+INFO 2026-01-25 01:15:33,991 tasks Invalidated cache for 6 teams
+INFO 2026-01-25 01:33:47,872 tasks Invalidated cache for 6 teams
+INFO 2026-01-25 01:48:17,386 tasks Invalidated cache for 6 teams
+INFO 2026-01-25 02:21:34,361 tasks Invalidated cache for 6 teams
+INFO 2026-01-25 02:30:00,126 tasks Invalidated cache for 6 teams
+INFO 2026-01-25 02:53:25,381 tasks Invalidated cache for 6 teams
+INFO 2026-01-25 03:13:17,170 tasks Invalidated cache for 6 teams
+INFO 2026-01-25 03:15:02,873 tasks Invalidated cache for 6 teams
+INFO 2026-01-25 03:30:24,227 tasks Invalidated cache for 6 teams
+INFO 2026-01-25 03:46:25,611 tasks Invalidated cache for 6 teams
+INFO 2026-01-25 04:06:57,674 tasks Invalidated cache for 6 teams
+INFO 2026-01-25 04:31:47,033 tasks Invalidated cache for 6 teams
+INFO 2026-01-25 05:04:40,884 tasks Invalidated cache for 6 teams
+INFO 2026-01-25 05:35:21,074 tasks Invalidated cache for 6 teams
+INFO 2026-01-25 05:48:33,938 tasks Invalidated cache for 6 teams
+INFO 2026-01-25 06:00:01,352 tasks Invalidated cache for 6 teams
+INFO 2026-01-25 06:15:07,218 tasks Invalidated cache for 6 teams
+INFO 2026-01-25 06:40:43,025 tasks Invalidated cache for 6 teams
+INFO 2026-01-25 06:49:53,827 tasks Invalidated cache for 6 teams
+INFO 2026-01-25 07:00:00,126 tasks Invalidated cache for 6 teams
+INFO 2026-01-25 07:15:00,096 tasks Invalidated cache for 6 teams
+INFO 2026-01-25 07:30:00,132 tasks Invalidated cache for 6 teams
+INFO 2026-01-25 07:45:00,068 tasks Invalidated cache for 6 teams
+INFO 2026-01-25 08:07:56,499 tasks Invalidated cache for 6 teams
+INFO 2026-01-25 08:21:54,855 tasks Invalidated cache for 6 teams
+INFO 2026-01-25 09:01:41,698 tasks All caches cleared
+INFO 2026-01-25 09:01:41,758 tasks Invalidated cache for 6 teams
+INFO 2026-01-25 14:53:15,114 tasks Invalidated cache for 6 teams
+INFO 2026-01-25 14:54:07,702 tasks Refreshed 1 live games
+INFO 2026-01-25 15:59:19,861 tasks Invalidated cache for 6 teams
+INFO 2026-01-25 15:59:46,985 tasks Refreshed 1 live games
+INFO 2026-01-25 16:02:42,828 tasks Invalidated cache for 6 teams
+INFO 2026-01-25 16:15:35,437 tasks Refreshed 1 live games
+INFO 2026-01-25 17:05:44,868 tasks Invalidated cache for 6 teams
+INFO 2026-01-25 17:06:17,270 tasks Refreshed 1 live games
+INFO 2026-01-25 17:18:36,975 tasks Invalidated cache for 6 teams
+INFO 2026-01-25 17:18:50,670 tasks Refreshed 1 live games
+INFO 2026-01-25 17:20:13,927 tasks Refreshed 1 live games
+INFO 2026-01-25 17:30:00,077 tasks Invalidated cache for 6 teams
+INFO 2026-01-25 17:30:14,490 tasks Refreshed 2 live games
+INFO 2026-01-25 17:40:15,964 tasks Refreshed 2 live games
+INFO 2026-01-25 17:45:27,719 tasks Invalidated cache for 6 teams
+INFO 2026-01-25 17:52:49,528 tasks Refreshed 2 live games
+INFO 2026-01-25 18:00:00,089 tasks Invalidated cache for 6 teams
+INFO 2026-01-25 18:00:14,326 tasks Refreshed 2 live games
+INFO 2026-01-25 18:10:13,574 tasks Refreshed 2 live games
+INFO 2026-01-25 18:15:00,064 tasks Invalidated cache for 6 teams
+INFO 2026-01-25 18:20:13,678 tasks Refreshed 2 live games
+INFO 2026-01-25 18:30:00,135 tasks Invalidated cache for 6 teams
+INFO 2026-01-25 18:30:13,903 tasks Refreshed 2 live games
+INFO 2026-01-25 18:40:14,592 tasks Refreshed 2 live games
+INFO 2026-01-25 18:58:33,228 tasks Invalidated cache for 6 teams
+INFO 2026-01-25 18:58:48,450 tasks Refreshed 2 live games
+INFO 2026-01-25 19:00:57,264 tasks Invalidated cache for 6 teams
+INFO 2026-01-25 19:01:11,924 tasks Refreshed 1 live games
+INFO 2026-01-25 19:10:15,269 tasks Refreshed 1 live games
+INFO 2026-01-25 19:15:00,033 tasks Invalidated cache for 6 teams
+INFO 2026-01-25 19:20:22,306 tasks Refreshed 1 live games
+INFO 2026-01-25 19:40:27,647 tasks Invalidated cache for 6 teams
+INFO 2026-01-25 19:40:42,309 tasks Refreshed 1 live games
+INFO 2026-01-25 19:48:11,831 tasks Invalidated cache for 6 teams
+INFO 2026-01-25 19:50:15,382 tasks Refreshed 1 live games
+INFO 2026-01-25 20:00:00,146 tasks Invalidated cache for 6 teams
+INFO 2026-01-25 20:00:15,679 tasks Refreshed 1 live games
+INFO 2026-01-25 20:10:17,420 tasks Refreshed 1 live games
+INFO 2026-01-25 20:15:00,030 tasks Invalidated cache for 6 teams
+INFO 2026-01-25 20:20:18,058 tasks Refreshed 1 live games
+INFO 2026-01-25 20:30:00,114 tasks Invalidated cache for 6 teams
+INFO 2026-01-25 20:30:17,341 tasks Refreshed 1 live games
+INFO 2026-01-25 20:40:17,455 tasks Refreshed 1 live games
+INFO 2026-01-25 20:45:00,032 tasks Invalidated cache for 6 teams
+INFO 2026-01-25 20:50:29,332 tasks Refreshed 1 live games
+INFO 2026-01-25 21:00:00,114 tasks Invalidated cache for 6 teams
+INFO 2026-01-25 21:00:18,100 tasks Refreshed 1 live games
+INFO 2026-01-25 21:10:17,196 tasks Refreshed 1 live games
+INFO 2026-01-25 21:15:00,065 tasks Invalidated cache for 6 teams
+INFO 2026-01-25 21:20:17,014 tasks Refreshed 1 live games
+INFO 2026-01-25 21:30:00,110 tasks Invalidated cache for 6 teams
+INFO 2026-01-25 21:30:17,315 tasks Refreshed 1 live games
+INFO 2026-01-25 21:40:17,682 tasks Refreshed 1 live games
+INFO 2026-01-25 21:45:00,059 tasks Invalidated cache for 6 teams
+INFO 2026-01-25 22:07:49,177 tasks Invalidated cache for 6 teams
+INFO 2026-01-25 22:08:03,155 tasks Refreshed 1 live games
+INFO 2026-01-25 22:24:16,015 tasks Invalidated cache for 6 teams
+INFO 2026-01-25 22:24:30,464 tasks Refreshed 1 live games
+INFO 2026-01-25 22:41:24,139 tasks Invalidated cache for 6 teams
+INFO 2026-01-25 22:46:17,279 tasks Invalidated cache for 6 teams
+INFO 2026-01-25 23:00:00,070 tasks Invalidated cache for 6 teams
+INFO 2026-01-25 23:15:00,051 tasks Invalidated cache for 6 teams
+INFO 2026-01-25 23:30:00,100 tasks Invalidated cache for 6 teams
+INFO 2026-01-25 23:45:00,113 tasks Invalidated cache for 6 teams
+INFO 2026-01-26 00:00:00,061 tasks Invalidated cache for 4 teams
+INFO 2026-01-26 01:26:26,220 tasks Invalidated cache for 4 teams
+INFO 2026-01-26 03:05:19,175 tasks Invalidated cache for 4 teams
+INFO 2026-01-26 03:42:41,777 tasks Invalidated cache for 4 teams
+INFO 2026-01-26 03:45:00,061 tasks Invalidated cache for 4 teams
+INFO 2026-01-26 04:00:00,048 tasks Invalidated cache for 4 teams
+INFO 2026-01-26 04:15:00,125 tasks Invalidated cache for 4 teams
+INFO 2026-01-26 04:30:00,075 tasks Invalidated cache for 4 teams
+INFO 2026-01-26 04:45:00,063 tasks Invalidated cache for 4 teams
+INFO 2026-01-26 05:00:00,290 tasks Invalidated cache for 4 teams
+INFO 2026-01-26 05:15:00,229 tasks Invalidated cache for 4 teams
+INFO 2026-01-26 05:30:00,072 tasks Invalidated cache for 4 teams
+INFO 2026-01-26 05:45:00,033 tasks Invalidated cache for 4 teams
+INFO 2026-01-26 06:00:00,087 tasks Invalidated cache for 4 teams
+INFO 2026-01-26 06:15:00,104 tasks Invalidated cache for 4 teams
+INFO 2026-01-26 14:05:31,418 tasks All caches cleared
+INFO 2026-01-26 14:05:31,553 tasks Invalidated cache for 4 teams
+INFO 2026-01-26 15:52:57,564 tasks Invalidated cache for 4 teams
+INFO 2026-01-26 16:55:37,506 tasks Invalidated cache for 4 teams
+INFO 2026-01-26 17:00:00,070 tasks Invalidated cache for 4 teams
+INFO 2026-01-26 17:15:00,052 tasks Invalidated cache for 4 teams
+INFO 2026-01-26 17:30:00,076 tasks Invalidated cache for 4 teams
+INFO 2026-01-26 17:45:00,026 tasks Invalidated cache for 4 teams
+INFO 2026-01-26 18:00:00,034 tasks Invalidated cache for 4 teams
+INFO 2026-01-26 18:15:00,040 tasks Invalidated cache for 4 teams
+INFO 2026-01-26 18:30:00,082 tasks Invalidated cache for 4 teams
+INFO 2026-01-26 18:45:00,043 tasks Invalidated cache for 4 teams
+INFO 2026-01-26 19:00:00,049 tasks Invalidated cache for 4 teams
+INFO 2026-01-26 19:15:00,042 tasks Invalidated cache for 4 teams
+INFO 2026-01-26 19:30:00,044 tasks Invalidated cache for 4 teams
+INFO 2026-01-26 19:45:00,027 tasks Invalidated cache for 4 teams
+INFO 2026-01-26 20:00:00,070 tasks Invalidated cache for 4 teams
+INFO 2026-01-26 20:15:00,043 tasks Invalidated cache for 4 teams
+INFO 2026-01-26 20:30:00,055 tasks Invalidated cache for 4 teams
+INFO 2026-01-26 20:45:00,135 tasks Invalidated cache for 4 teams
+INFO 2026-01-26 21:00:00,052 tasks Invalidated cache for 4 teams
+INFO 2026-01-26 21:15:00,067 tasks Invalidated cache for 4 teams
+INFO 2026-01-26 21:30:00,089 tasks Invalidated cache for 4 teams
+INFO 2026-01-26 21:45:00,122 tasks Invalidated cache for 4 teams
+INFO 2026-01-26 22:00:00,092 tasks Invalidated cache for 4 teams
+INFO 2026-01-26 22:17:48,857 tasks Invalidated cache for 4 teams
+INFO 2026-01-26 22:30:00,069 tasks Invalidated cache for 4 teams
+INFO 2026-01-26 23:04:52,467 tasks Invalidated cache for 4 teams
+INFO 2026-01-26 23:16:00,264 tasks Invalidated cache for 4 teams
+INFO 2026-01-26 23:30:10,824 tasks Invalidated cache for 4 teams
+INFO 2026-01-26 23:45:00,069 tasks Invalidated cache for 4 teams
+INFO 2026-01-27 00:00:00,085 tasks Invalidated cache for 4 teams
+INFO 2026-01-27 00:15:00,072 tasks Invalidated cache for 4 teams
+INFO 2026-01-27 00:30:00,061 tasks Invalidated cache for 4 teams
+INFO 2026-01-27 00:45:00,033 tasks Invalidated cache for 4 teams
+INFO 2026-01-27 01:00:00,097 tasks Invalidated cache for 4 teams
+INFO 2026-01-27 01:15:00,045 tasks Invalidated cache for 4 teams
+INFO 2026-01-27 01:24:37,129 tasks Successfully seeded stats
+INFO 2026-01-27 01:24:37,133 tasks Cache cleared after seeding stats
