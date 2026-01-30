@@ -1,11 +1,12 @@
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from django.db.models import Avg, Sum, F, Q
+from django.db.models import Avg, Sum, F, Q, Count
 from django.core.cache import cache
 from django.conf import settings
 from games.models import Game
 from stats.models import FootballTeamGameStat, FootballPlayerGameStat
+from collections import defaultdict
 
 
 class AnalyticsViewSet(viewsets.ViewSet):
@@ -201,8 +202,208 @@ class AnalyticsViewSet(viewsets.ViewSet):
         # Add fantasy points and total yards for all positions
         response_data['fantasy_points'] = round((aggregate_stats['fantasy_pts'] or 0) / num_games, 2)
         response_data['total_yards_allowed'] = round((aggregate_stats['total_yards_allowed'] or 0) / num_games, 2)
-        
+
         # Store in cache
         cache.set(cache_key, response_data, settings.CACHE_TTL['analytics'])
-        
+
+        return Response(response_data)
+
+    """
+    GET API --> Individual player stats for a team over last N games
+    Query params: 'team_id' (required), 'games' (default=3)
+    Returns players grouped by position with averaged stats
+    """
+    @action(detail=False, methods=['get'], url_path='player-stats')
+    def player_stats(self, request):
+        team_id = request.query_params.get('team_id')
+        num_games = int(request.query_params.get('games', 3))
+
+        if not team_id:
+            return Response({'Error': '\'team_id\' is required'}, status=400)
+
+        # Create cache key
+        cache_key = f'player_stats_{team_id}_{num_games}'
+
+        # Try to get from cache
+        cached_data = cache.get(cache_key)
+        if cached_data:
+            return Response(cached_data)
+
+        # Get relevant games for this team
+        games = (Game.objects
+                .filter(Q(home_team_id=team_id) | Q(away_team_id=team_id))
+                .exclude(home_score=None)
+                .order_by('-date')[:num_games]
+                .values_list('id', flat=True))
+
+        # Get player stats for this team in these games
+        player_stats_qs = (FootballPlayerGameStat.objects
+            .filter(game_id__in=games, player__team_id=team_id)
+            .values(
+                'player_id',
+                'player__name',
+                'player__position'
+            )
+            .annotate(
+                rush_attempts=Avg('rush_attempts'),
+                rush_yards=Avg('rush_yards'),
+                rush_touchdowns=Avg('rush_touchdowns'),
+                targets=Avg('targets'),
+                receptions=Avg('receptions'),
+                receiving_yards=Avg('receiving_yards'),
+                receiving_touchdowns=Avg('receiving_touchdowns'),
+                pass_attempts=Avg('pass_attempts'),
+                pass_completions=Avg('pass_completions'),
+                pass_yards=Avg('pass_yards'),
+                pass_touchdowns=Avg('pass_touchdowns'),
+                interceptions=Avg('interceptions'),
+                sacks=Avg('sacks'),
+                fantasy_points=Avg('fantasy_points_ppr'),
+                games_played=Count('id')
+            ))
+
+        # Group by position
+        grouped = defaultdict(list)
+        valid_positions = ['QB', 'RB', 'WR', 'TE']
+
+        for stat in player_stats_qs:
+            pos = stat['player__position']
+            if pos in valid_positions:
+                grouped[pos].append({
+                    'player_id': stat['player_id'],
+                    'name': stat['player__name'],
+                    'position': pos,
+                    'stats': {
+                        'rush_attempts': round(stat['rush_attempts'] or 0, 1),
+                        'rush_yards': round(stat['rush_yards'] or 0, 1),
+                        'rush_touchdowns': round(stat['rush_touchdowns'] or 0, 1),
+                        'targets': round(stat['targets'] or 0, 1),
+                        'receptions': round(stat['receptions'] or 0, 1),
+                        'receiving_yards': round(stat['receiving_yards'] or 0, 1),
+                        'receiving_touchdowns': round(stat['receiving_touchdowns'] or 0, 1),
+                        'pass_attempts': round(stat['pass_attempts'] or 0, 1),
+                        'pass_completions': round(stat['pass_completions'] or 0, 1),
+                        'pass_yards': round(stat['pass_yards'] or 0, 1),
+                        'pass_touchdowns': round(stat['pass_touchdowns'] or 0, 1),
+                        'interceptions': round(stat['interceptions'] or 0, 1),
+                        'sacks': round(stat['sacks'] or 0, 1),
+                        'fantasy_points_ppr': round(stat['fantasy_points'] or 0, 1),
+                    },
+                    'games_played': stat['games_played']
+                })
+
+        # Sort each position group by fantasy points descending
+        for pos in grouped:
+            grouped[pos].sort(key=lambda x: x['stats']['fantasy_points_ppr'], reverse=True)
+
+        # Ensure all positions have an empty list if no players
+        players_dict = {pos: grouped.get(pos, []) for pos in valid_positions}
+
+        response_data = {
+            'team_id': team_id,
+            'games_analyzed': len(games),
+            'players': players_dict
+        }
+
+        # Store in cache
+        cache.set(cache_key, response_data, settings.CACHE_TTL['analytics'])
+
+        return Response(response_data)
+
+    """
+    GET API --> Usage metrics for pie charts (target share, carry share, pass/run split)
+    Query params: 'team_id' (required), 'games' (default=3)
+    """
+    @action(detail=False, methods=['get'], url_path='usage-metrics')
+    def usage_metrics(self, request):
+        team_id = request.query_params.get('team_id')
+        num_games = int(request.query_params.get('games', 3))
+
+        if not team_id:
+            return Response({'Error': '\'team_id\' is required'}, status=400)
+
+        # Create cache key
+        cache_key = f'usage_metrics_{team_id}_{num_games}'
+
+        # Try to get from cache
+        cached_data = cache.get(cache_key)
+        if cached_data:
+            return Response(cached_data)
+
+        # Get team stats for pass/run split
+        team_stats = (FootballTeamGameStat.objects
+            .filter(team_id=team_id)
+            .order_by('-game__date')[:num_games]
+            .aggregate(
+                pass_att=Avg('pass_attempts'),
+                rush_att=Avg('rush_attempts')
+            ))
+
+        total_plays = (team_stats['pass_att'] or 0) + (team_stats['rush_att'] or 0)
+        pass_pct = (team_stats['pass_att'] / total_plays * 100) if total_plays > 0 else 0
+        rush_pct = (team_stats['rush_att'] / total_plays * 100) if total_plays > 0 else 0
+
+        # Get games for player stats
+        games = (Game.objects
+            .filter(Q(home_team_id=team_id) | Q(away_team_id=team_id))
+            .exclude(home_score=None)
+            .order_by('-date')[:num_games]
+            .values_list('id', flat=True))
+
+        # Target share (WR + TE for receivers chart)
+        target_stats = (FootballPlayerGameStat.objects
+            .filter(game_id__in=games, player__team_id=team_id)
+            .filter(player__position__in=['WR', 'TE'])
+            .values('player_id', 'player__name', 'player__position')
+            .annotate(total_targets=Sum('targets')))
+
+        total_targets = sum(t['total_targets'] or 0 for t in target_stats)
+        target_share = []
+        for t in target_stats:
+            if t['total_targets'] and t['total_targets'] > 0:
+                target_share.append({
+                    'player_id': t['player_id'],
+                    'name': t['player__name'],
+                    'position': t['player__position'],
+                    'targets': round(t['total_targets'] / num_games, 1),
+                    'target_share_percentage': round(t['total_targets'] / total_targets * 100, 1) if total_targets > 0 else 0
+                })
+        target_share.sort(key=lambda x: x['target_share_percentage'], reverse=True)
+
+        # Carry share (RB only)
+        carry_stats = (FootballPlayerGameStat.objects
+            .filter(game_id__in=games, player__team_id=team_id)
+            .filter(player__position='RB')
+            .values('player_id', 'player__name', 'player__position')
+            .annotate(total_carries=Sum('rush_attempts')))
+
+        total_carries = sum(c['total_carries'] or 0 for c in carry_stats)
+        carry_share = []
+        for c in carry_stats:
+            if c['total_carries'] and c['total_carries'] > 0:
+                carry_share.append({
+                    'player_id': c['player_id'],
+                    'name': c['player__name'],
+                    'position': c['player__position'],
+                    'rush_attempts': round(c['total_carries'] / num_games, 1),
+                    'carry_share_percentage': round(c['total_carries'] / total_carries * 100, 1) if total_carries > 0 else 0
+                })
+        carry_share.sort(key=lambda x: x['carry_share_percentage'], reverse=True)
+
+        response_data = {
+            'team_id': team_id,
+            'games_analyzed': num_games,
+            'pass_run_split': {
+                'pass_attempts': round(team_stats['pass_att'] or 0, 1),
+                'rush_attempts': round(team_stats['rush_att'] or 0, 1),
+                'pass_percentage': round(pass_pct, 1),
+                'rush_percentage': round(rush_pct, 1)
+            },
+            'target_share': target_share,
+            'carry_share': carry_share
+        }
+
+        # Store in cache
+        cache.set(cache_key, response_data, settings.CACHE_TTL['analytics'])
+
         return Response(response_data)
