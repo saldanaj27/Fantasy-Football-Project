@@ -1,0 +1,61 @@
+.usage-charts-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.chart-card {
+  background-color: #f9fafb;
+  border-radius: 0.5rem;
+  padding: 1rem;
+}
+
+.chart-title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 0.5rem;
+  text-align: center;
+}
+
+.chart-tooltip {
+  background-color: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.375rem;
+  padding: 0.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.tooltip-name {
+  font-weight: 600;
+  color: #111827;
+  margin: 0;
+}
+
+.tooltip-value {
+  color: #6b7280;
+  margin: 0;
+}
+
+.legend-text {
+  font-size: 0.75rem;
+  color: #374151;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .usage-charts-container {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .usage-charts-container {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .usage-charts-container .chart-card:last-child {
+    grid-column: span 2;
+  }
+}
