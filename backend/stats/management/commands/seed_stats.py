@@ -9,11 +9,19 @@ import nflreadpy as nfl
 
 class Command(BaseCommand):
     help = "Seed Stats tables with NFl team data from nflreadpy (using 2025 season)"
-    
+
     def handle(self, *args, **kwargs):
         curr_season = 2025
         player_stats_df = nfl.load_player_stats(seasons=curr_season)
         team_stats_df = nfl.load_team_stats(seasons=curr_season)
+
+        # Load snap counts for advanced metrics
+        try:
+            snap_counts_df = nfl.load_snap_counts(seasons=curr_season)
+            self.stdout.write(self.style.SUCCESS('Loaded snap counts data'))
+        except Exception as e:
+            self.stdout.write(self.style.WARNING(f'Could not load snap counts: {e}'))
+            snap_counts_df = None
 
         for row in player_stats_df.filter(player_stats_df['position'].is_in(OFFENSIVE_POS)).iter_rows(named=True):
             player_obj = Player.objects.get(id=row['player_id'])
@@ -43,6 +51,26 @@ class Command(BaseCommand):
             rec_tds = row['receiving_tds']
             fantasy_ppr = row['fantasy_points_ppr']
 
+            # Advanced metrics from load_player_stats
+            air_yards = row.get('receiving_air_yards', 0) or 0
+            yac = row.get('receiving_yards_after_catch', 0) or 0
+
+            # Look up snap counts if available
+            snap_count = 0
+            snap_pct = 0.0
+            if snap_counts_df is not None:
+                try:
+                    player_snaps = snap_counts_df.filter(
+                        (snap_counts_df['player_id'] == row['player_id']) &
+                        (snap_counts_df['week'] == row['week'])
+                    )
+                    if len(player_snaps) > 0:
+                        snap_row = player_snaps.row(0, named=True)
+                        snap_count = snap_row.get('offense_snaps', 0) or 0
+                        snap_pct = snap_row.get('offense_pct', 0.0) or 0.0
+                except Exception:
+                    pass
+
             FootballPlayerGameStat.objects.update_or_create(
                 player = player_obj,
                 game = game_obj,
@@ -63,6 +91,11 @@ class Command(BaseCommand):
                     'receiving_yards': rec_yds,
                     'receiving_touchdowns': rec_tds,
                     'fantasy_points_ppr': fantasy_ppr,
+                    # Advanced metrics
+                    'air_yards': air_yards,
+                    'yards_after_catch': yac,
+                    'snap_count': snap_count,
+                    'snap_pct': snap_pct,
                 }
             )
 
