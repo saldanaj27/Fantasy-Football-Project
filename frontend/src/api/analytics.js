@@ -77,3 +77,14 @@ export async function getUsageMetrics(numGames, teamId) {
   const response = await api.get(`analytics/usage-metrics/?games=${numGames}&team_id=${teamId}`)
   return response.data
 }
+
+/*
+  Output of /api/analytics/player-comparison API:
+  Param: player_id, games (default=3)
+
+  Returns player stats + upcoming matchup + opponent defense ranking
+*/
+export async function getPlayerComparison(playerId, numGames = 3) {
+  const response = await api.get(`analytics/player-comparison/?player_id=${playerId}&games=${numGames}`)
+  return response.data
+}
