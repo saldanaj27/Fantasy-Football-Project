@@ -7,6 +7,8 @@ from django.conf import settings
 from games.models import Game
 from stats.models import FootballTeamGameStat, FootballPlayerGameStat
 from collections import defaultdict
+from players.models import Player
+from django.utils import timezone
 
 
 class AnalyticsViewSet(viewsets.ViewSet):
@@ -259,7 +261,12 @@ class AnalyticsViewSet(viewsets.ViewSet):
                 interceptions=Avg('interceptions'),
                 sacks=Avg('sacks'),
                 fantasy_points=Avg('fantasy_points_ppr'),
-                games_played=Count('id')
+                games_played=Count('id'),
+                # Advanced metrics
+                avg_snap_count=Avg('snap_count'),
+                avg_snap_pct=Avg('snap_pct'),
+                avg_air_yards=Avg('air_yards'),
+                avg_yac=Avg('yards_after_catch'),
             ))
 
         # Group by position
@@ -269,6 +276,11 @@ class AnalyticsViewSet(viewsets.ViewSet):
         for stat in player_stats_qs:
             pos = stat['player__position']
             if pos in valid_positions:
+                # Calculate aDOT
+                air_yards = stat['avg_air_yards'] or 0
+                targets = stat['targets'] or 0
+                adot = round(air_yards / targets, 1) if targets > 0 else 0
+
                 grouped[pos].append({
                     'player_id': stat['player_id'],
                     'name': stat['player__name'],
@@ -288,6 +300,12 @@ class AnalyticsViewSet(viewsets.ViewSet):
                         'interceptions': round(stat['interceptions'] or 0, 1),
                         'sacks': round(stat['sacks'] or 0, 1),
                         'fantasy_points_ppr': round(stat['fantasy_points'] or 0, 1),
+                        # Advanced metrics
+                        'snap_count': round(stat['avg_snap_count'] or 0, 1),
+                        'snap_pct': round(stat['avg_snap_pct'] or 0, 1),
+                        'air_yards': round(air_yards, 1),
+                        'yards_after_catch': round(stat['avg_yac'] or 0, 1),
+                        'adot': adot,
                     },
                     'games_played': stat['games_played']
                 })
@@ -405,5 +423,149 @@ class AnalyticsViewSet(viewsets.ViewSet):
 
         # Store in cache
         cache.set(cache_key, response_data, settings.CACHE_TTL['analytics'])
+
+        return Response(response_data)
+
+    """
+    GET API --> Player comparison data for Start/Sit tool
+    Query params: 'player_id' (required), 'games' (default=3)
+    Returns player stats + upcoming matchup + opponent defense ranking
+    """
+    @action(detail=False, methods=['get'], url_path='player-comparison')
+    def player_comparison(self, request):
+        player_id = request.query_params.get('player_id')
+        num_games = int(request.query_params.get('games', 3))
+
+        if not player_id:
+            return Response({'Error': '\'player_id\' is required'}, status=400)
+
+        # Get player info
+        try:
+            player = Player.objects.select_related('team').get(id=player_id)
+        except Player.DoesNotExist:
+            return Response({'Error': 'Player not found'}, status=404)
+
+        # Get player's recent stats
+        player_games = (Game.objects
+            .filter(Q(home_team=player.team) | Q(away_team=player.team))
+            .exclude(home_score=None)
+            .order_by('-date')[:num_games]
+            .values_list('id', flat=True))
+
+        player_stats = (FootballPlayerGameStat.objects
+            .filter(player_id=player_id, game_id__in=player_games)
+            .aggregate(
+                avg_fantasy_points=Avg('fantasy_points_ppr'),
+                avg_targets=Avg('targets'),
+                avg_receptions=Avg('receptions'),
+                avg_receiving_yards=Avg('receiving_yards'),
+                avg_receiving_tds=Avg('receiving_touchdowns'),
+                avg_rush_attempts=Avg('rush_attempts'),
+                avg_rush_yards=Avg('rush_yards'),
+                avg_rush_tds=Avg('rush_touchdowns'),
+                avg_pass_yards=Avg('pass_yards'),
+                avg_pass_tds=Avg('pass_touchdowns'),
+                avg_interceptions=Avg('interceptions'),
+                games_played=Count('id'),
+                # Advanced metrics
+                avg_snap_count=Avg('snap_count'),
+                avg_snap_pct=Avg('snap_pct'),
+                avg_air_yards=Avg('air_yards'),
+                avg_yac=Avg('yards_after_catch'),
+            ))
+
+        # Get upcoming game
+        today = timezone.now().date()
+        upcoming_game = (Game.objects
+            .filter(Q(home_team=player.team) | Q(away_team=player.team))
+            .filter(date__gte=today)
+            .order_by('date')
+            .first())
+
+        matchup_data = None
+        defense_ranking = None
+
+        if upcoming_game and player.team:
+            # Determine opponent
+            if upcoming_game.home_team_id == player.team.id:
+                opponent = upcoming_game.away_team
+                is_home = True
+            else:
+                opponent = upcoming_game.home_team
+                is_home = False
+
+            # Get opponent's defense ranking vs this position
+            opp_games = (Game.objects
+                .filter(Q(home_team=opponent) | Q(away_team=opponent))
+                .exclude(home_score=None)
+                .order_by('-date')[:num_games]
+                .values_list('id', flat=True))
+
+            # Stats allowed to this position
+            position = player.position
+            opp_defense_stats = (FootballPlayerGameStat.objects
+                .filter(game_id__in=opp_games)
+                .filter(player__position=position)
+                .exclude(player__team=opponent)
+                .aggregate(
+                    fantasy_pts_allowed=Avg('fantasy_points_ppr'),
+                    yards_allowed=Avg(F('receiving_yards') + F('rush_yards')),
+                    tds_allowed=Avg(F('receiving_touchdowns') + F('rush_touchdowns')),
+                ))
+
+            matchup_data = {
+                'game_id': upcoming_game.id,
+                'opponent': opponent.abbreviation,
+                'opponent_name': opponent.name,
+                'is_home': is_home,
+                'game_date': upcoming_game.date.isoformat(),
+                'game_time': upcoming_game.time,
+                'location': upcoming_game.location,
+                'weather': {
+                    'temp': upcoming_game.temp,
+                    'wind': upcoming_game.wind,
+                    'roof': upcoming_game.roof,
+                }
+            }
+
+            defense_ranking = {
+                'fantasy_pts_allowed': round(opp_defense_stats['fantasy_pts_allowed'] or 0, 1),
+                'yards_allowed': round(opp_defense_stats['yards_allowed'] or 0, 1),
+                'tds_allowed': round(opp_defense_stats['tds_allowed'] or 0, 2),
+            }
+
+        response_data = {
+            'player': {
+                'id': player.id,
+                'name': player.name,
+                'position': player.position,
+                'team': player.team.abbreviation if player.team else None,
+                'team_name': player.team.name if player.team else None,
+                'image_url': player.image_url,
+            },
+            'stats': {
+                'avg_fantasy_points': round(player_stats['avg_fantasy_points'] or 0, 1),
+                'avg_targets': round(player_stats['avg_targets'] or 0, 1),
+                'avg_receptions': round(player_stats['avg_receptions'] or 0, 1),
+                'avg_receiving_yards': round(player_stats['avg_receiving_yards'] or 0, 1),
+                'avg_receiving_tds': round(player_stats['avg_receiving_tds'] or 0, 2),
+                'avg_rush_attempts': round(player_stats['avg_rush_attempts'] or 0, 1),
+                'avg_rush_yards': round(player_stats['avg_rush_yards'] or 0, 1),
+                'avg_rush_tds': round(player_stats['avg_rush_tds'] or 0, 2),
+                'avg_pass_yards': round(player_stats['avg_pass_yards'] or 0, 1),
+                'avg_pass_tds': round(player_stats['avg_pass_tds'] or 0, 2),
+                'avg_interceptions': round(player_stats['avg_interceptions'] or 0, 2),
+                'games_played': player_stats['games_played'] or 0,
+                # Advanced metrics
+                'avg_snap_count': round(player_stats['avg_snap_count'] or 0, 1),
+                'avg_snap_pct': round(player_stats['avg_snap_pct'] or 0, 1),
+                'avg_air_yards': round(player_stats['avg_air_yards'] or 0, 1),
+                'avg_yac': round(player_stats['avg_yac'] or 0, 1),
+                'adot': round((player_stats['avg_air_yards'] or 0) / (player_stats['avg_targets'] or 1), 1) if player_stats['avg_targets'] else 0,
+            },
+            'games_analyzed': num_games,
+            'matchup': matchup_data,
+            'opponent_defense': defense_ranking,
+        }
 
         return Response(response_data)
