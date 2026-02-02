@@ -28,6 +28,28 @@ class FootballPlayerGameStat(models.Model):
     two_pt = models.PositiveIntegerField(default=0)
 
     fantasy_points_ppr = models.FloatField(default=0.0)
+
+    # Advanced Metrics
+    snap_count = models.PositiveIntegerField(default=0)
+    snap_pct = models.FloatField(default=0.0)  # Percentage of team offensive snaps
+
+    # Red Zone Stats
+    redzone_targets = models.PositiveIntegerField(default=0)
+    redzone_receptions = models.PositiveIntegerField(default=0)
+    redzone_carries = models.PositiveIntegerField(default=0)
+    redzone_rush_tds = models.PositiveIntegerField(default=0)
+    redzone_rec_tds = models.PositiveIntegerField(default=0)
+
+    # Air Yards (WR/TE metrics)
+    air_yards = models.FloatField(default=0.0)  # Total air yards on targets
+    yards_after_catch = models.FloatField(default=0.0)
+
+    @property
+    def adot(self):
+        """Average Depth of Target"""
+        if self.targets > 0:
+            return self.air_yards / self.targets
+        return 0.0
     
     # completion_pct @property
 
