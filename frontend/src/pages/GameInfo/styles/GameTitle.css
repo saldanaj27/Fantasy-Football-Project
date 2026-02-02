@@ -26,8 +26,14 @@
   color: #6b7280;
 }
 
-.game-title-details p {
+.game-title-details span {
   margin: 0;
+}
+
+.game-location {
+  font-size: 0.8rem;
+  color: #9ca3af;
+  margin-top: 0.25rem;
 }
 
 .game-title-score {
@@ -44,4 +50,110 @@
   font-size: 0.875rem;
   color: #6b7280;
   margin-top: 0.25rem;
+}
+
+/* Weather Section */
+.weather-section {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.weather-title {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #6b7280;
+  margin-bottom: 0.75rem;
+}
+
+.weather-grid {
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.weather-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.weather-icon {
+  font-size: 1.25rem;
+}
+
+.weather-value {
+  font-weight: 600;
+  color: #111827;
+  font-size: 0.9rem;
+}
+
+.weather-label {
+  font-size: 0.75rem;
+  color: #9ca3af;
+}
+
+/* Weather Impact Warnings */
+.weather-impacts {
+  margin-top: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.weather-impact {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.375rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.weather-impact.high {
+  background-color: #fef2f2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+}
+
+.weather-impact.medium {
+  background-color: #fefce8;
+  color: #854d0e;
+  border: 1px solid #fef08a;
+}
+
+.impact-icon {
+  font-size: 1rem;
+}
+
+.impact-text {
+  white-space: nowrap;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .game-title-content {
+    flex-direction: column;
+    gap: 1rem;
+    text-align: center;
+  }
+
+  .game-title-score {
+    text-align: center;
+  }
+
+  .game-title-details {
+    justify-content: center;
+  }
+
+  .weather-grid {
+    justify-content: center;
+  }
+
+  .weather-impacts {
+    justify-content: center;
+  }
 }
