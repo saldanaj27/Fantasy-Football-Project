@@ -1,0 +1,457 @@
+/* ESPN-Style Start/Sit Page */
+.startsite-page {
+  min-height: 100vh;
+  background-color: #0a0a0a;
+}
+
+.top-nav {
+  background-color: #c00;
+  padding: 0.75rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.brand {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: white;
+  letter-spacing: -0.5px;
+  text-decoration: none;
+}
+
+.nav-links {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.nav-link {
+  color: white;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 0.5rem 0;
+  border-bottom: 2px solid transparent;
+  transition: border-color 0.2s;
+}
+
+.nav-link:hover {
+  border-bottom-color: white;
+}
+
+.nav-link.active {
+  border-bottom-color: white;
+}
+
+.startsit-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1.5rem;
+}
+
+.page-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: white;
+  margin: 0 0 0.5rem 0;
+}
+
+.page-subtitle {
+  color: #666;
+  font-size: 0.875rem;
+  margin-bottom: 1.5rem;
+}
+
+/* Player Selection */
+.player-selection {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+  align-items: start;
+}
+
+.player-selector {
+  background-color: #1a1a1a;
+  border: 1px solid #2a2a2a;
+  border-radius: 0.5rem;
+  padding: 1rem;
+}
+
+.selector-label {
+  color: #888;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 0.75rem;
+}
+
+.search-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid #3a3a3a;
+  border-radius: 0.375rem;
+  background-color: #2a2a2a;
+  color: white;
+  font-size: 0.875rem;
+  margin-bottom: 0.5rem;
+}
+
+.search-input::placeholder {
+  color: #666;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #c00;
+}
+
+.search-results {
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.search-result-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.search-result-item:hover {
+  background-color: #2a2a2a;
+}
+
+.result-image {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: #2a2a2a;
+}
+
+.result-info {
+  flex: 1;
+}
+
+.result-name {
+  color: white;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.result-meta {
+  color: #666;
+  font-size: 0.75rem;
+}
+
+/* Selected Player Card */
+.selected-player {
+  background-color: #2a2a2a;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  text-align: center;
+}
+
+.selected-image {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  margin: 0 auto 0.75rem;
+  background-color: #3a3a3a;
+}
+
+.selected-name {
+  color: white;
+  font-weight: 600;
+  font-size: 1rem;
+  margin-bottom: 0.25rem;
+}
+
+.selected-meta {
+  color: #888;
+  font-size: 0.875rem;
+}
+
+.clear-btn {
+  margin-top: 0.75rem;
+  padding: 0.375rem 0.75rem;
+  background: none;
+  border: 1px solid #3a3a3a;
+  border-radius: 0.25rem;
+  color: #888;
+  font-size: 0.75rem;
+  cursor: pointer;
+}
+
+.clear-btn:hover {
+  border-color: #c00;
+  color: #c00;
+}
+
+/* VS Divider */
+.vs-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-top: 3rem;
+}
+
+.vs-text {
+  background-color: #c00;
+  color: white;
+  font-weight: 800;
+  font-size: 1.25rem;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Comparison Section */
+.comparison-section {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+.player-comparison-card {
+  background-color: #1a1a1a;
+  border: 1px solid #2a2a2a;
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+.player-comparison-card.recommended {
+  border-color: #22c55e;
+  box-shadow: 0 0 20px rgba(34, 197, 94, 0.2);
+}
+
+.comparison-header {
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  border-bottom: 1px solid #2a2a2a;
+}
+
+.comparison-image {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background-color: #2a2a2a;
+}
+
+.comparison-info {
+  flex: 1;
+}
+
+.comparison-name {
+  color: white;
+  font-weight: 600;
+  font-size: 1.125rem;
+}
+
+.comparison-meta {
+  color: #888;
+  font-size: 0.875rem;
+}
+
+.recommendation-badge {
+  background-color: #22c55e;
+  color: white;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  text-transform: uppercase;
+}
+
+/* Stats Section */
+.stats-section {
+  padding: 1rem;
+}
+
+.stats-title {
+  color: #888;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 0.75rem;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+}
+
+.stat-box {
+  background-color: #2a2a2a;
+  border-radius: 0.375rem;
+  padding: 0.75rem;
+  text-align: center;
+}
+
+.stat-value {
+  color: white;
+  font-weight: 700;
+  font-size: 1.125rem;
+}
+
+.stat-value.highlight {
+  color: #c00;
+}
+
+.stat-label {
+  color: #666;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  margin-top: 0.25rem;
+}
+
+/* Matchup Section */
+.matchup-section {
+  padding: 1rem;
+  border-top: 1px solid #2a2a2a;
+}
+
+.matchup-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.matchup-opponent {
+  color: white;
+  font-weight: 600;
+}
+
+.matchup-details {
+  color: #666;
+  font-size: 0.75rem;
+}
+
+.defense-stats {
+  display: flex;
+  gap: 1rem;
+}
+
+.defense-stat {
+  flex: 1;
+  background-color: #2a2a2a;
+  border-radius: 0.375rem;
+  padding: 0.5rem;
+  text-align: center;
+}
+
+.defense-value {
+  color: white;
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+.defense-value.good {
+  color: #22c55e;
+}
+
+.defense-value.bad {
+  color: #ef4444;
+}
+
+.defense-label {
+  color: #666;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+}
+
+/* Empty State */
+.empty-comparison {
+  grid-column: span 2;
+  text-align: center;
+  padding: 4rem 2rem;
+  color: #666;
+}
+
+.empty-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.empty-text {
+  font-size: 1.125rem;
+  color: #888;
+}
+
+/* Loading */
+.loading-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.loading-spinner {
+  width: 30px;
+  height: 30px;
+  border: 3px solid #2a2a2a;
+  border-top-color: #c00;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Position badge */
+.position-badge {
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.2rem 0.5rem;
+  border-radius: 0.25rem;
+  margin-left: 0.5rem;
+}
+
+.position-badge.qb { background-color: rgba(34, 197, 94, 0.2); color: #4ade80; }
+.position-badge.rb { background-color: rgba(239, 68, 68, 0.2); color: #f87171; }
+.position-badge.wr { background-color: rgba(59, 130, 246, 0.2); color: #60a5fa; }
+.position-badge.te { background-color: rgba(251, 191, 36, 0.2); color: #fbbf24; }
+
+/* Responsive */
+@media (max-width: 768px) {
+  .top-nav {
+    padding: 0.75rem 1rem;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .startsit-content {
+    padding: 1rem;
+  }
+
+  .player-selection {
+    grid-template-columns: 1fr;
+  }
+
+  .vs-divider {
+    padding: 1rem 0;
+  }
+
+  .comparison-section {
+    grid-template-columns: 1fr;
+  }
+
+  .empty-comparison {
+    grid-column: span 1;
+  }
+}
