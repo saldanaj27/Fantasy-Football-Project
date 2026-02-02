@@ -62,6 +62,8 @@ export default function Home() {
         <div className="nav-links">
           <Link to="/" className="nav-link active">Scores</Link>
           <Link to="/players" className="nav-link">Players</Link>
+          <Link to="/rankings" className="nav-link">Rankings</Link>
+          <Link to="/start-sit" className="nav-link">Start/Sit</Link>
         </div>
       </nav>
 
