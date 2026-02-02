@@ -70,6 +70,8 @@ export default function Players() {
         <div className="nav-links">
           <Link to="/" className="nav-link">Scores</Link>
           <Link to="/players" className="nav-link active">Players</Link>
+          <Link to="/rankings" className="nav-link">Rankings</Link>
+          <Link to="/start-sit" className="nav-link">Start/Sit</Link>
         </div>
       </nav>
 
