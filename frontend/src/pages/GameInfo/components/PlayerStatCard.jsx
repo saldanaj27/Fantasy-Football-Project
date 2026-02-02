@@ -19,6 +19,12 @@ export default function PlayerStatCard({ player, position }) {
         <span className="stat-label">Rush Yds</span>
         <span className="stat-value">{player.stats.rush_yards.toFixed(1)}</span>
       </div>
+      {player.stats.snap_pct > 0 && (
+        <div className="stat-item advanced">
+          <span className="stat-label">Snap %</span>
+          <span className="stat-value">{player.stats.snap_pct.toFixed(0)}%</span>
+        </div>
+      )}
     </div>
   )
 
@@ -44,6 +50,12 @@ export default function PlayerStatCard({ player, position }) {
         <span className="stat-label">Rec Yds</span>
         <span className="stat-value">{player.stats.receiving_yards.toFixed(1)}</span>
       </div>
+      {player.stats.snap_pct > 0 && (
+        <div className="stat-item advanced">
+          <span className="stat-label">Snap %</span>
+          <span className="stat-value">{player.stats.snap_pct.toFixed(0)}%</span>
+        </div>
+      )}
     </div>
   )
 
@@ -65,6 +77,24 @@ export default function PlayerStatCard({ player, position }) {
         <span className="stat-label">Rec TDs</span>
         <span className="stat-value">{player.stats.receiving_touchdowns.toFixed(1)}</span>
       </div>
+      {player.stats.adot > 0 && (
+        <div className="stat-item advanced">
+          <span className="stat-label">aDOT</span>
+          <span className="stat-value">{player.stats.adot.toFixed(1)}</span>
+        </div>
+      )}
+      {player.stats.yards_after_catch > 0 && (
+        <div className="stat-item advanced">
+          <span className="stat-label">YAC</span>
+          <span className="stat-value">{player.stats.yards_after_catch.toFixed(1)}</span>
+        </div>
+      )}
+      {player.stats.snap_pct > 0 && (
+        <div className="stat-item advanced">
+          <span className="stat-label">Snap %</span>
+          <span className="stat-value">{player.stats.snap_pct.toFixed(0)}%</span>
+        </div>
+      )}
     </div>
   )
 

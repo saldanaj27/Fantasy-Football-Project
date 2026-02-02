@@ -39,21 +39,35 @@
 }
 
 .player-stats-grid.qb {
-  grid-template-columns: repeat(4, 1fr);
-}
-
-.player-stats-grid.rb {
   grid-template-columns: repeat(5, 1fr);
 }
 
+.player-stats-grid.rb {
+  grid-template-columns: repeat(6, 1fr);
+}
+
 .player-stats-grid.wr-te {
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(7, 1fr);
 }
 
 .stat-item {
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+
+.stat-item.advanced {
+  background-color: #f0f9ff;
+  border-radius: 0.25rem;
+  padding: 0.25rem 0.5rem;
+}
+
+.stat-item.advanced .stat-label {
+  color: #0369a1;
+}
+
+.stat-item.advanced .stat-value {
+  color: #0c4a6e;
 }
 
 .stat-label {
