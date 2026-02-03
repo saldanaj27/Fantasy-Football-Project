@@ -427,6 +427,103 @@ class AnalyticsViewSet(viewsets.ViewSet):
         return Response(response_data)
 
     """
+    GET API --> Box score stats for a specific game
+    Query params: 'game_id' (required)
+    Returns team totals and top performers for a finished game
+    """
+    @action(detail=False, methods=['get'], url_path='game-box-score')
+    def game_box_score(self, request):
+        game_id = request.query_params.get('game_id')
+
+        if not game_id:
+            return Response({'Error': '\'game_id\' is required'}, status=400)
+
+        # Get the game
+        try:
+            game = Game.objects.select_related('home_team', 'away_team').get(id=game_id)
+        except Game.DoesNotExist:
+            return Response({'Error': 'Game not found'}, status=404)
+
+        if game.home_score is None:
+            return Response({'Error': 'Game has not been played yet'}, status=400)
+
+        # Get team stats for this game
+        home_team_stats = FootballTeamGameStat.objects.filter(
+            game_id=game_id, team=game.home_team
+        ).first()
+        away_team_stats = FootballTeamGameStat.objects.filter(
+            game_id=game_id, team=game.away_team
+        ).first()
+
+        def format_team_stats(stats):
+            if not stats:
+                return None
+            return {
+                'passing': {
+                    'attempts': stats.pass_attempts,
+                    'completions': stats.pass_completions,
+                    'yards': stats.pass_yards,
+                    'touchdowns': stats.pass_touchdowns,
+                },
+                'rushing': {
+                    'attempts': stats.rush_attempts,
+                    'yards': stats.rush_yards,
+                    'touchdowns': stats.rush_touchdowns,
+                },
+                'total_yards': stats.pass_yards + stats.rush_yards,
+                'turnovers': stats.interceptions + stats.fumbles_lost,
+                'sacks': stats.sacks,
+                'penalties': stats.penalties,
+                'penalty_yards': stats.penalty_yards,
+            }
+
+        # Get top performers for each team
+        def get_top_performers(team):
+            player_stats = FootballPlayerGameStat.objects.filter(
+                game_id=game_id, player__team=team
+            ).select_related('player').order_by('-fantasy_points_ppr')[:5]
+
+            performers = []
+            for ps in player_stats:
+                if ps.fantasy_points_ppr > 0:
+                    performers.append({
+                        'player_id': ps.player.id,
+                        'name': ps.player.name,
+                        'position': ps.player.position,
+                        'fantasy_points': round(ps.fantasy_points_ppr, 1),
+                        'pass_yards': ps.pass_yards,
+                        'pass_tds': ps.pass_touchdowns,
+                        'rush_yards': ps.rush_yards,
+                        'rush_tds': ps.rush_touchdowns,
+                        'receptions': ps.receptions,
+                        'receiving_yards': ps.receiving_yards,
+                        'receiving_tds': ps.receiving_touchdowns,
+                    })
+            return performers
+
+        response_data = {
+            'game_id': game.id,
+            'home_team': {
+                'id': game.home_team.id,
+                'abbreviation': game.home_team.abbreviation,
+                'name': game.home_team.name,
+                'score': game.home_score,
+                'stats': format_team_stats(home_team_stats),
+                'top_performers': get_top_performers(game.home_team),
+            },
+            'away_team': {
+                'id': game.away_team.id,
+                'abbreviation': game.away_team.abbreviation,
+                'name': game.away_team.name,
+                'score': game.away_score,
+                'stats': format_team_stats(away_team_stats),
+                'top_performers': get_top_performers(game.away_team),
+            },
+        }
+
+        return Response(response_data)
+
+    """
     GET API --> Player comparison data for Start/Sit tool
     Query params: 'player_id' (required), 'games' (default=3)
     Returns player stats + upcoming matchup + opponent defense ranking
