@@ -88,3 +88,26 @@ export async function getPlayerComparison(playerId, numGames = 3) {
   const response = await api.get(`analytics/player-comparison/?player_id=${playerId}&games=${numGames}`)
   return response.data
 }
+
+/*
+  Output of /api/analytics/game-box-score API:
+  Param: game_id (required)
+
+  Returns box score stats for a finished game:
+  {
+    'game_id': <int>,
+    'home_team': {
+      'id': <int>,
+      'abbreviation': <string>,
+      'name': <string>,
+      'score': <int>,
+      'stats': { passing, rushing, total_yards, turnovers, sacks, penalties },
+      'top_performers': [{ player_id, name, position, fantasy_points, ... }]
+    },
+    'away_team': { same structure }
+  }
+*/
+export async function getGameBoxScore(gameId) {
+  const response = await api.get(`analytics/game-box-score/?game_id=${gameId}`)
+  return response.data
+}
