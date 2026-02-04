@@ -45,6 +45,7 @@ export default function GameBox({ game }) {
       <div className={`team-row ${awayWins ? 'winner' : ''}`}>
         <span className="team-abbr">{game.away_team.abbreviation}</span>
         <span className="team-name">{game.away_team.name}</span>
+        <span className="team-record">{game.away_team.record}</span>
         <span className={`team-score ${!isFinished ? 'pending' : ''}`}>
           {isFinished ? game.away_score : '-'}
         </span>
@@ -54,6 +55,7 @@ export default function GameBox({ game }) {
       <div className={`team-row ${homeWins ? 'winner' : ''}`}>
         <span className="team-abbr">{game.home_team.abbreviation}</span>
         <span className="team-name">{game.home_team.name}</span>
+        <span className="team-record">{game.home_team.record}</span>
         <span className={`team-score ${!isFinished ? 'pending' : ''}`}>
           {isFinished ? game.home_score : '-'}
         </span>
