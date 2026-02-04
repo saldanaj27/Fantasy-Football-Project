@@ -68,7 +68,7 @@ export default function GameTitle({ game }) {
       <div className="game-title-content">
         <div className="game-title-info">
           <h1>
-            {game.away_team.abbreviation} @ {game.home_team.abbreviation}
+            {game.away_team.abbreviation} <span className="team-record">({game.away_team.record})</span> @ {game.home_team.abbreviation} <span className="team-record">({game.home_team.record})</span>
           </h1>
           <div className="game-title-details">
             <span>{formatDate(game.date)}</span>

@@ -19,6 +19,12 @@
   margin-bottom: 0.5rem;
 }
 
+.game-title-info h1 .team-record {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #6b7280;
+}
+
 .game-title-details {
   display: flex;
   gap: 1rem;
