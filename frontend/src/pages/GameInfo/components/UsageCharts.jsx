@@ -76,14 +76,14 @@ export default function UsageCharts({ usageMetrics }) {
       {/* Target Share */}
       <div className="chart-card">
         <h5 className="chart-title">Target Share (WR/TE)</h5>
-        <ResponsiveContainer width="100%" height={160}>
+        <ResponsiveContainer width="100%" height={200}>
           <PieChart>
             <Pie
               data={targetShareData}
               cx="50%"
-              cy="50%"
-              innerRadius={35}
-              outerRadius={55}
+              cy="40%"
+              innerRadius={30}
+              outerRadius={50}
               paddingAngle={2}
               dataKey="value"
             >
@@ -93,10 +93,12 @@ export default function UsageCharts({ usageMetrics }) {
             </Pie>
             <Tooltip content={<CustomTooltip />} />
             <Legend
-              layout="vertical"
-              align="right"
-              verticalAlign="middle"
-              formatter={(value) => <span className="legend-text">{value}</span>}
+              layout="horizontal"
+              align="center"
+              verticalAlign="bottom"
+              formatter={(value, entry) => (
+                <span className="legend-text">{value} ({entry.payload.value.toFixed(0)}%)</span>
+              )}
             />
           </PieChart>
         </ResponsiveContainer>
@@ -105,14 +107,14 @@ export default function UsageCharts({ usageMetrics }) {
       {/* Carry Share */}
       <div className="chart-card">
         <h5 className="chart-title">RB Carry Share</h5>
-        <ResponsiveContainer width="100%" height={160}>
+        <ResponsiveContainer width="100%" height={200}>
           <PieChart>
             <Pie
               data={carryShareData}
               cx="50%"
-              cy="50%"
-              innerRadius={35}
-              outerRadius={55}
+              cy="40%"
+              innerRadius={30}
+              outerRadius={50}
               paddingAngle={2}
               dataKey="value"
             >
@@ -122,10 +124,12 @@ export default function UsageCharts({ usageMetrics }) {
             </Pie>
             <Tooltip content={<CustomTooltip />} />
             <Legend
-              layout="vertical"
-              align="right"
-              verticalAlign="middle"
-              formatter={(value) => <span className="legend-text">{value}</span>}
+              layout="horizontal"
+              align="center"
+              verticalAlign="bottom"
+              formatter={(value, entry) => (
+                <span className="legend-text">{value} ({entry.payload.value.toFixed(0)}%)</span>
+              )}
             />
           </PieChart>
         </ResponsiveContainer>
