@@ -1,0 +1,126 @@
+/* Scores Page */
+.scores-page {
+  min-height: calc(100vh - 60px);
+  background-color: var(--bg-primary);
+}
+
+/* Main Content */
+.scores-content {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 1.5rem;
+}
+
+/* Week Selector Bar */
+.week-bar {
+  background-color: var(--bg-card);
+  border-radius: 0.5rem;
+  padding: 1rem 1.5rem;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border: 1px solid var(--border-color);
+}
+
+.week-bar-title {
+  color: var(--text-primary);
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.week-selector {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.week-selector label {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.week-selector select {
+  background-color: var(--bg-input);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 0.375rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.week-selector select:hover {
+  border-color: var(--accent-primary);
+}
+
+.week-selector select:focus {
+  outline: none;
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 2px rgba(var(--accent-primary), 0.2);
+}
+
+/* Games Grid */
+.games-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 1rem;
+}
+
+/* Loading and Empty States */
+.loading-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--border-color);
+  border-top-color: var(--accent-primary);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.no-games {
+  text-align: center;
+  padding: 4rem;
+  color: var(--text-tertiary);
+}
+
+.no-games-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.no-games-text {
+  font-size: 1.125rem;
+  color: var(--text-secondary);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .week-bar {
+    flex-direction: column;
+    gap: 1rem;
+    text-align: center;
+  }
+
+  .games-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .scores-content {
+    padding: 1rem;
+  }
+}
