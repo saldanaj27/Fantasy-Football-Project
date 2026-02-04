@@ -1,48 +1,7 @@
-/* ESPN-Style Start/Sit Page */
+/* Start/Sit Page */
 .startsite-page {
-  min-height: 100vh;
-  background-color: #0a0a0a;
-}
-
-.top-nav {
-  background-color: #c00;
-  padding: 0.75rem 2rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.brand {
-  font-size: 1.5rem;
-  font-weight: 800;
-  color: white;
-  letter-spacing: -0.5px;
-  text-decoration: none;
-}
-
-.nav-links {
-  display: flex;
-  gap: 1.5rem;
-}
-
-.nav-link {
-  color: white;
-  text-decoration: none;
-  font-weight: 600;
-  font-size: 0.875rem;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  padding: 0.5rem 0;
-  border-bottom: 2px solid transparent;
-  transition: border-color 0.2s;
-}
-
-.nav-link:hover {
-  border-bottom-color: white;
-}
-
-.nav-link.active {
-  border-bottom-color: white;
+  min-height: calc(100vh - 60px);
+  background-color: var(--bg-primary);
 }
 
 .startsit-content {
@@ -54,12 +13,12 @@
 .page-title {
   font-size: 1.25rem;
   font-weight: 700;
-  color: white;
+  color: var(--text-primary);
   margin: 0 0 0.5rem 0;
 }
 
 .page-subtitle {
-  color: #666;
+  color: var(--text-tertiary);
   font-size: 0.875rem;
   margin-bottom: 1.5rem;
 }
@@ -74,14 +33,14 @@
 }
 
 .player-selector {
-  background-color: #1a1a1a;
-  border: 1px solid #2a2a2a;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
   border-radius: 0.5rem;
   padding: 1rem;
 }
 
 .selector-label {
-  color: #888;
+  color: var(--text-secondary);
   font-size: 0.75rem;
   font-weight: 600;
   text-transform: uppercase;
@@ -92,21 +51,21 @@
 .search-input {
   width: 100%;
   padding: 0.75rem 1rem;
-  border: 1px solid #3a3a3a;
+  border: 1px solid var(--border-color);
   border-radius: 0.375rem;
-  background-color: #2a2a2a;
-  color: white;
+  background-color: var(--bg-input);
+  color: var(--text-primary);
   font-size: 0.875rem;
   margin-bottom: 0.5rem;
 }
 
 .search-input::placeholder {
-  color: #666;
+  color: var(--text-tertiary);
 }
 
 .search-input:focus {
   outline: none;
-  border-color: #c00;
+  border-color: var(--accent-primary);
 }
 
 .search-results {
@@ -125,14 +84,14 @@
 }
 
 .search-result-item:hover {
-  background-color: #2a2a2a;
+  background-color: var(--bg-tertiary);
 }
 
 .result-image {
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background-color: #2a2a2a;
+  background-color: var(--bg-tertiary);
 }
 
 .result-info {
@@ -140,19 +99,19 @@
 }
 
 .result-name {
-  color: white;
+  color: var(--text-primary);
   font-size: 0.875rem;
   font-weight: 500;
 }
 
 .result-meta {
-  color: #666;
+  color: var(--text-tertiary);
   font-size: 0.75rem;
 }
 
 /* Selected Player Card */
 .selected-player {
-  background-color: #2a2a2a;
+  background-color: var(--bg-tertiary);
   border-radius: 0.5rem;
   padding: 1rem;
   text-align: center;
@@ -163,18 +122,18 @@
   height: 80px;
   border-radius: 50%;
   margin: 0 auto 0.75rem;
-  background-color: #3a3a3a;
+  background-color: var(--bg-secondary);
 }
 
 .selected-name {
-  color: white;
+  color: var(--text-primary);
   font-weight: 600;
   font-size: 1rem;
   margin-bottom: 0.25rem;
 }
 
 .selected-meta {
-  color: #888;
+  color: var(--text-secondary);
   font-size: 0.875rem;
 }
 
@@ -182,16 +141,16 @@
   margin-top: 0.75rem;
   padding: 0.375rem 0.75rem;
   background: none;
-  border: 1px solid #3a3a3a;
+  border: 1px solid var(--border-color);
   border-radius: 0.25rem;
-  color: #888;
+  color: var(--text-secondary);
   font-size: 0.75rem;
   cursor: pointer;
 }
 
 .clear-btn:hover {
-  border-color: #c00;
-  color: #c00;
+  border-color: var(--accent-primary);
+  color: var(--accent-primary);
 }
 
 /* VS Divider */
@@ -203,7 +162,7 @@
 }
 
 .vs-text {
-  background-color: #c00;
+  background-color: var(--accent-primary);
   color: white;
   font-weight: 800;
   font-size: 1.25rem;
@@ -223,14 +182,14 @@
 }
 
 .player-comparison-card {
-  background-color: #1a1a1a;
-  border: 1px solid #2a2a2a;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
   border-radius: 0.5rem;
   overflow: hidden;
 }
 
 .player-comparison-card.recommended {
-  border-color: #22c55e;
+  border-color: var(--accent-success);
   box-shadow: 0 0 20px rgba(34, 197, 94, 0.2);
 }
 
@@ -239,14 +198,14 @@
   display: flex;
   align-items: center;
   gap: 1rem;
-  border-bottom: 1px solid #2a2a2a;
+  border-bottom: 1px solid var(--border-color);
 }
 
 .comparison-image {
   width: 60px;
   height: 60px;
   border-radius: 50%;
-  background-color: #2a2a2a;
+  background-color: var(--bg-tertiary);
 }
 
 .comparison-info {
@@ -254,18 +213,18 @@
 }
 
 .comparison-name {
-  color: white;
+  color: var(--text-primary);
   font-weight: 600;
   font-size: 1.125rem;
 }
 
 .comparison-meta {
-  color: #888;
+  color: var(--text-secondary);
   font-size: 0.875rem;
 }
 
 .recommendation-badge {
-  background-color: #22c55e;
+  background-color: var(--accent-success);
   color: white;
   font-size: 0.7rem;
   font-weight: 700;
@@ -280,7 +239,7 @@
 }
 
 .stats-title {
-  color: #888;
+  color: var(--text-secondary);
   font-size: 0.75rem;
   font-weight: 600;
   text-transform: uppercase;
@@ -295,24 +254,24 @@
 }
 
 .stat-box {
-  background-color: #2a2a2a;
+  background-color: var(--bg-tertiary);
   border-radius: 0.375rem;
   padding: 0.75rem;
   text-align: center;
 }
 
 .stat-value {
-  color: white;
+  color: var(--text-primary);
   font-weight: 700;
   font-size: 1.125rem;
 }
 
 .stat-value.highlight {
-  color: #c00;
+  color: var(--accent-primary);
 }
 
 .stat-label {
-  color: #666;
+  color: var(--text-tertiary);
   font-size: 0.7rem;
   text-transform: uppercase;
   margin-top: 0.25rem;
@@ -321,7 +280,7 @@
 /* Matchup Section */
 .matchup-section {
   padding: 1rem;
-  border-top: 1px solid #2a2a2a;
+  border-top: 1px solid var(--border-color);
 }
 
 .matchup-header {
@@ -332,12 +291,12 @@
 }
 
 .matchup-opponent {
-  color: white;
+  color: var(--text-primary);
   font-weight: 600;
 }
 
 .matchup-details {
-  color: #666;
+  color: var(--text-tertiary);
   font-size: 0.75rem;
 }
 
@@ -348,28 +307,28 @@
 
 .defense-stat {
   flex: 1;
-  background-color: #2a2a2a;
+  background-color: var(--bg-tertiary);
   border-radius: 0.375rem;
   padding: 0.5rem;
   text-align: center;
 }
 
 .defense-value {
-  color: white;
+  color: var(--text-primary);
   font-weight: 600;
   font-size: 0.875rem;
 }
 
 .defense-value.good {
-  color: #22c55e;
+  color: var(--accent-success);
 }
 
 .defense-value.bad {
-  color: #ef4444;
+  color: var(--accent-danger);
 }
 
 .defense-label {
-  color: #666;
+  color: var(--text-tertiary);
   font-size: 0.65rem;
   text-transform: uppercase;
 }
@@ -379,7 +338,7 @@
   grid-column: span 2;
   text-align: center;
   padding: 4rem 2rem;
-  color: #666;
+  color: var(--text-tertiary);
 }
 
 .empty-icon {
@@ -389,7 +348,7 @@
 
 .empty-text {
   font-size: 1.125rem;
-  color: #888;
+  color: var(--text-secondary);
 }
 
 /* Loading */
@@ -403,8 +362,8 @@
 .loading-spinner {
   width: 30px;
   height: 30px;
-  border: 3px solid #2a2a2a;
-  border-top-color: #c00;
+  border: 3px solid var(--border-color);
+  border-top-color: var(--accent-primary);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }
@@ -422,19 +381,13 @@
   margin-left: 0.5rem;
 }
 
-.position-badge.qb { background-color: rgba(34, 197, 94, 0.2); color: #4ade80; }
-.position-badge.rb { background-color: rgba(239, 68, 68, 0.2); color: #f87171; }
-.position-badge.wr { background-color: rgba(59, 130, 246, 0.2); color: #60a5fa; }
-.position-badge.te { background-color: rgba(251, 191, 36, 0.2); color: #fbbf24; }
+.position-badge.qb { background-color: var(--qb-bg); color: var(--qb-text); }
+.position-badge.rb { background-color: var(--rb-bg); color: var(--rb-text); }
+.position-badge.wr { background-color: var(--wr-bg); color: var(--wr-text); }
+.position-badge.te { background-color: var(--te-bg); color: var(--te-text); }
 
 /* Responsive */
 @media (max-width: 768px) {
-  .top-nav {
-    padding: 0.75rem 1rem;
-    flex-direction: column;
-    gap: 0.75rem;
-  }
-
   .startsit-content {
     padding: 1rem;
   }

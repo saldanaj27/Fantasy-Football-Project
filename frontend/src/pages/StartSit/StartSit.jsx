@@ -1,5 +1,4 @@
 import { useState, useEffect, useCallback } from 'react'
-import { Link } from 'react-router-dom'
 import { searchPlayers } from '../../api/players'
 import { getPlayerComparison } from '../../api/analytics'
 import './styles/StartSit.css'
@@ -247,16 +246,6 @@ export default function StartSit() {
 
   return (
     <div className="startsite-page">
-      <nav className="top-nav">
-        <Link to="/" className="brand">FANTASY FOOTBALL</Link>
-        <div className="nav-links">
-          <Link to="/" className="nav-link">Scores</Link>
-          <Link to="/players" className="nav-link">Players</Link>
-          <Link to="/rankings" className="nav-link">Rankings</Link>
-          <Link to="/start-sit" className="nav-link active">Start/Sit</Link>
-        </div>
-      </nav>
-
       <div className="startsit-content">
         <h1 className="page-title">Start/Sit Tool</h1>
         <p className="page-subtitle">Compare two players to see who to start this week</p>

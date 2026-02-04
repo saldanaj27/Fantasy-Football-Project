@@ -1,5 +1,4 @@
 import { useState, useEffect, useMemo } from 'react'
-import { Link } from 'react-router-dom'
 import { searchPlayers } from '../../api/players'
 import './styles/Rankings.css'
 
@@ -131,17 +130,6 @@ export default function Rankings() {
 
   return (
     <div className="rankings-page">
-      {/* Top Navigation */}
-      <nav className="top-nav">
-        <Link to="/" className="brand">FANTASY FOOTBALL</Link>
-        <div className="nav-links">
-          <Link to="/" className="nav-link">Scores</Link>
-          <Link to="/players" className="nav-link">Players</Link>
-          <Link to="/rankings" className="nav-link">Rankings</Link>
-          <Link to="/start-sit" className="nav-link">Start/Sit</Link>
-        </div>
-      </nav>
-
       <div className="rankings-content">
         <h1 className="page-title">Fantasy Rankings</h1>
 

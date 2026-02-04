@@ -1,5 +1,4 @@
 import { useState, useEffect, useCallback } from 'react'
-import { Link } from 'react-router-dom'
 import { searchPlayers, getTeams } from '../../api/players'
 import PlayerCard from './components/PlayerCard'
 import './styles/Players.css'
@@ -64,17 +63,6 @@ export default function Players() {
 
   return (
     <div className="players-page">
-      {/* Top Navigation */}
-      <nav className="top-nav">
-        <Link to="/" className="brand">FANTASY FOOTBALL</Link>
-        <div className="nav-links">
-          <Link to="/" className="nav-link">Scores</Link>
-          <Link to="/players" className="nav-link active">Players</Link>
-          <Link to="/rankings" className="nav-link">Rankings</Link>
-          <Link to="/start-sit" className="nav-link">Start/Sit</Link>
-        </div>
-      </nav>
-
       <div className="players-content">
         <h1 className="page-title">Player Search</h1>
 
