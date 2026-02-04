@@ -8,31 +8,66 @@ from teams.constants import TEAM_IDS
 import nflreadpy as nfl
 
 class Command(BaseCommand):
-    help = "Seed Stats tables with NFl team data from nflreadpy (using 2025 season)"
+    help = "Seed Stats tables with NFL data from nflreadpy"
+
+    def add_arguments(self, parser):
+        parser.add_argument(
+            '--start-year',
+            type=int,
+            default=2025,
+            help='Start year for seeding (default: 2025)'
+        )
+        parser.add_argument(
+            '--end-year',
+            type=int,
+            default=2025,
+            help='End year for seeding (default: 2025)'
+        )
 
     def handle(self, *args, **kwargs):
-        curr_season = 2025
-        player_stats_df = nfl.load_player_stats(seasons=curr_season)
-        team_stats_df = nfl.load_team_stats(seasons=curr_season)
+        start_year = kwargs['start_year']
+        end_year = kwargs['end_year']
+        seasons = list(range(start_year, end_year + 1))
+
+        self.stdout.write(f'Loading stats for seasons: {seasons}')
+
+        player_stats_df = nfl.load_player_stats(seasons=seasons)
+        team_stats_df = nfl.load_team_stats(seasons=seasons)
 
         # Load snap counts for advanced metrics
         try:
-            snap_counts_df = nfl.load_snap_counts(seasons=curr_season)
+            snap_counts_df = nfl.load_snap_counts(seasons=seasons)
             self.stdout.write(self.style.SUCCESS('Loaded snap counts data'))
         except Exception as e:
             self.stdout.write(self.style.WARNING(f'Could not load snap counts: {e}'))
             snap_counts_df = None
 
-        for row in player_stats_df.filter(player_stats_df['position'].is_in(OFFENSIVE_POS)).iter_rows(named=True):
-            player_obj = Player.objects.get(id=row['player_id'])
+        # Process player stats
+        offensive_stats = player_stats_df.filter(player_stats_df['position'].is_in(OFFENSIVE_POS))
+        total_player_stats = len(offensive_stats)
+        self.stdout.write(f'Processing {total_player_stats} player stat records...')
+
+        processed = 0
+        skipped = 0
+        for row in offensive_stats.iter_rows(named=True):
+            try:
+                player_obj = Player.objects.get(id=row['player_id'])
+            except Player.DoesNotExist:
+                skipped += 1
+                continue
+
             # converts '1' to '01'
             game_id_prefix = str(row['season']) + '_' + str(row['week']).zfill(2) + '_'
-            
-            # checks both 'id's of 'team' first or 'opponent_team'  
+
+            # checks both 'id's of 'team' first or 'opponent_team'
             try:
                 game_obj = Game.objects.get(id=game_id_prefix+row['team']+'_'+row['opponent_team'])
-            except:
-                game_obj = Game.objects.get(id=game_id_prefix+row['opponent_team']+'_'+row['team'])
+            except Game.DoesNotExist:
+                try:
+                    game_obj = Game.objects.get(id=game_id_prefix+row['opponent_team']+'_'+row['team'])
+                except Game.DoesNotExist:
+                    skipped += 1
+                    continue
 
             pass_comp = row['completions']
             pass_att = row['attempts']
@@ -41,7 +76,6 @@ class Command(BaseCommand):
             pass_ints = row['passing_interceptions']
             sacks = row['sacks_suffered']
             sack_yds_loss = row['sack_yards_lost']
-            # fumbles = row['sack_fumbles']+row['rushing_fumbles']+row['receiving_fumbles']
             rush_att = row['carries']
             rush_yds = row['rushing_yards']
             rush_tds = row['rushing_tds']
@@ -72,13 +106,12 @@ class Command(BaseCommand):
                     pass
 
             FootballPlayerGameStat.objects.update_or_create(
-                player = player_obj,
-                game = game_obj,
+                player=player_obj,
+                game=game_obj,
                 defaults={
                     'rush_attempts': rush_att,
                     'rush_yards': rush_yds,
                     'rush_touchdowns': rush_tds,
-                    # 'fumbles': fumbles,
                     'pass_yards': pass_yds,
                     'pass_attempts': pass_att,
                     'pass_completions': pass_comp,
@@ -91,7 +124,6 @@ class Command(BaseCommand):
                     'receiving_yards': rec_yds,
                     'receiving_touchdowns': rec_tds,
                     'fantasy_points_ppr': fantasy_ppr,
-                    # Advanced metrics
                     'air_yards': air_yards,
                     'yards_after_catch': yac,
                     'snap_count': snap_count,
@@ -99,15 +131,41 @@ class Command(BaseCommand):
                 }
             )
 
+            processed += 1
+            if processed % 500 == 0:
+                self.stdout.write(f'Processed {processed}/{total_player_stats} player stats...')
+
+        self.stdout.write(self.style.SUCCESS(f'Player stats: {processed} processed, {skipped} skipped'))
+
+        # Process team stats
+        total_team_stats = len(team_stats_df)
+        self.stdout.write(f'Processing {total_team_stats} team stat records...')
+
+        processed = 0
+        skipped = 0
         for row in team_stats_df.iter_rows(named=True):
-            team_obj = Team.objects.get(id=TEAM_IDS.get(row['team']))
+            team_id = TEAM_IDS.get(row['team'])
+            if not team_id:
+                skipped += 1
+                continue
+
+            try:
+                team_obj = Team.objects.get(id=team_id)
+            except Team.DoesNotExist:
+                skipped += 1
+                continue
+
             game_id_prefix = str(row['season']) + '_' + str(row['week']).zfill(2) + '_'
-            
+
             try:
                 game_obj = Game.objects.get(id=game_id_prefix+row['team']+'_'+row['opponent_team'])
-            except:
-                game_obj = Game.objects.get(id=game_id_prefix+row['opponent_team']+'_'+row['team'])
-            
+            except Game.DoesNotExist:
+                try:
+                    game_obj = Game.objects.get(id=game_id_prefix+row['opponent_team']+'_'+row['team'])
+                except Game.DoesNotExist:
+                    skipped += 1
+                    continue
+
             pass_comp = row['completions']
             pass_att = row['attempts']
             pass_yds = row['passing_yards']
@@ -120,7 +178,6 @@ class Command(BaseCommand):
             rush_yds = row['rushing_yards']
             rush_tds = row['rushing_tds']
             receptions = row['receptions']
-            # targets = row['targets']
             rec_yds = row['receiving_yards']
             rec_tds = row['receiving_tds']
             spec_teams_tds = row['special_teams_tds']
@@ -136,8 +193,8 @@ class Command(BaseCommand):
             fg_made = row['fg_made']
 
             FootballTeamGameStat.objects.update_or_create(
-                team = team_obj,
-                game = game_obj,
+                team=team_obj,
+                game=game_obj,
                 defaults={
                     'pass_attempts': pass_att,
                     'pass_completions': pass_comp,
@@ -150,7 +207,6 @@ class Command(BaseCommand):
                     'sacks': sacks,
                     'fumbles': fumbles,
                     'fumbles_lost': fumbles_lost,
-                    # 'targets': targets,
                     'receptions': receptions,
                     'receiving_yards': rec_yds,
                     'receiving_touchdowns': rec_tds,
@@ -167,5 +223,12 @@ class Command(BaseCommand):
                     'fg_made': fg_made,
                 }
             )
+
+            processed += 1
+            if processed % 100 == 0:
+                self.stdout.write(f'Processed {processed}/{total_team_stats} team stats...')
+
+        self.stdout.write(self.style.SUCCESS(f'Team stats: {processed} processed, {skipped} skipped'))
+        self.stdout.write(self.style.SUCCESS('Stats seeding complete!'))
 
 

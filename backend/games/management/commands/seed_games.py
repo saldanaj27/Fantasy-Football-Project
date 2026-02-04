@@ -6,12 +6,33 @@ import nflreadpy as nfl
 import datetime
 
 class Command(BaseCommand):
-    help = "Seed Games table with NFl team data from nflreadpy (using 2025 season)"
-    
-    def handle(self, *args, **kwargs):
-        curr_season = 2025
-        games_df = nfl.load_schedules(seasons=curr_season)
+    help = "Seed Games table with NFL schedule data from nflreadpy"
 
+    def add_arguments(self, parser):
+        parser.add_argument(
+            '--start-year',
+            type=int,
+            default=2025,
+            help='Start year for seeding (default: 2025)'
+        )
+        parser.add_argument(
+            '--end-year',
+            type=int,
+            default=2025,
+            help='End year for seeding (default: 2025)'
+        )
+
+    def handle(self, *args, **kwargs):
+        start_year = kwargs['start_year']
+        end_year = kwargs['end_year']
+        seasons = list(range(start_year, end_year + 1))
+
+        self.stdout.write(f'Loading games for seasons: {seasons}')
+        games_df = nfl.load_schedules(seasons=seasons)
+        total_games = len(games_df)
+        self.stdout.write(f'Found {total_games} games to process')
+
+        processed = 0
         for row in games_df.iter_rows(named=True):
             game_id = row['game_id']
             game_season = row['season']
@@ -30,9 +51,17 @@ class Command(BaseCommand):
             game_temp = row['temp']
             game_wind = row['wind']
 
+            # Skip if team not found (e.g., old team abbreviations)
+            if not away_team_id or not home_team_id:
+                continue
+
             date = datetime.date(int(game_day[0]), int(game_day[1]), int(game_day[2]))
-            away_team_obj = Team.objects.get(id=away_team_id)
-            home_team_obj = Team.objects.get(id=home_team_id)
+
+            try:
+                away_team_obj = Team.objects.get(id=away_team_id)
+                home_team_obj = Team.objects.get(id=home_team_id)
+            except Team.DoesNotExist:
+                continue
 
             Game.objects.update_or_create(
                 id=game_id,
@@ -54,6 +83,12 @@ class Command(BaseCommand):
                     'wind': game_wind,
                 }
             )
+
+            processed += 1
+            if processed % 100 == 0:
+                self.stdout.write(f'Processed {processed}/{total_games} games...')
+
+        self.stdout.write(self.style.SUCCESS(f'Successfully seeded {processed} games'))
 
 
 
