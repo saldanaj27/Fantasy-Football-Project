@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 from pathlib import Path
 from dotenv import load_dotenv
 import os
+import dj_database_url
 
 load_dotenv()
 
@@ -24,14 +25,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-j(wbeb*lxntb&ewp#nd7zm79-^#xthrigzyin9fduzll#!8f4$'
+SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-dev-key-change-in-production')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DEBUG', 'False').lower() in ('true', '1', 'yes')
 
-ALLOWED_HOSTS = [
-    '0.0.0.0'
-]
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1,0.0.0.0').split(',')
+
+# CSRF trusted origins for production
+CSRF_TRUSTED_ORIGINS = os.environ.get('CSRF_TRUSTED_ORIGINS', 'http://localhost:5173').split(',')
 
 # Application definition
 
@@ -52,13 +54,14 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # Serve static files in production
+    "corsheaders.middleware.CorsMiddleware",
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    "corsheaders.middleware.CorsMiddleware",
 ]
 
 ROOT_URLCONF = 'untitled_football_project.urls'
@@ -81,21 +84,26 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'untitled_football_project.wsgi.application'
 
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",   # Vite dev server
-    "http://127.0.0.1:5173",
-]
+# CORS Configuration
+CORS_ALLOWED_ORIGINS = os.environ.get(
+    'CORS_ALLOWED_ORIGINS',
+    'http://localhost:5173,http://127.0.0.1:5173'
+).split(',')
 
+# Allow credentials for authenticated requests
+CORS_ALLOW_CREDENTIALS = True
 
 
 """
 Cache Information (Redis)
 - Time-to-Live (TTL) - How long content is cached (in seconds)
 """
+REDIS_URL = os.environ.get('REDIS_URL', 'redis://127.0.0.1:6379/1')
+
 CACHES = {
     'default': {
         'BACKEND': 'django_redis.cache.RedisCache',
-        'LOCATION': 'redis://127.0.0.1:6379/1',
+        'LOCATION': REDIS_URL,
         'OPTIONS': {
             'CLIENT_CLASS': 'django_redis.client.DefaultClient',
         },
@@ -105,11 +113,11 @@ CACHES = {
 }
 
 CACHE_TTL = {
-    'games': 60 * 5,        
-    'teams': 60 * 60,       
-    'players': 60 * 60,     
-    'team_stats': 60 * 10,  
-    'analytics': 60 * 15,   
+    'games': 60 * 5,
+    'teams': 60 * 60,
+    'players': 60 * 60,
+    'team_stats': 60 * 10,
+    'analytics': 60 * 15,
 }
 
 
@@ -117,8 +125,8 @@ CACHE_TTL = {
 """
 Scheduled Jobs (Celery)
 """
-CELERY_BROKER_URL = 'redis://localhost:6379/0'
-CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_URL', os.environ.get('REDIS_URL', 'redis://localhost:6379/0'))
+CELERY_RESULT_BACKEND = os.environ.get('CELERY_RESULT_BACKEND', os.environ.get('REDIS_URL', 'redis://localhost:6379/0'))
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
@@ -138,17 +146,16 @@ LOGGING = {
             'class': 'logging.StreamHandler',
             'formatter': 'verbose',
         },
-        'file': {
-            'class': 'logging.FileHandler',
-            'filename': 'celery.log',
-            'formatter': 'verbose',
-        },
     },
     'loggers': {
         'stats.tasks': {
-            'handlers': ['console', 'file'],
+            'handlers': ['console'],
             'level': 'INFO',
             'propagate': False,
+        },
+        'django': {
+            'handlers': ['console'],
+            'level': os.environ.get('DJANGO_LOG_LEVEL', 'INFO'),
         },
     },
 }
@@ -156,20 +163,28 @@ LOGGING = {
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ.get('POSTGRES_DB'),
-        'USER': os.environ.get('POSTGRES_USER'),
-        'PASSWORD': os.environ.get('POSTGRES_PASSWORD'),
-        'HOST': os.environ.get('DB_HOST'),
-        'PORT': os.environ.get('DB_PORT'),
+# Support DATABASE_URL (Railway, Heroku, etc.) or individual vars
+DATABASE_URL = os.environ.get('DATABASE_URL')
+
+if DATABASE_URL:
+    DATABASES = {
+        'default': dj_database_url.config(default=DATABASE_URL, conn_max_age=600)
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': os.environ.get('POSTGRES_DB', 'fantasydb'),
+            'USER': os.environ.get('POSTGRES_USER', 'postgres'),
+            'PASSWORD': os.environ.get('POSTGRES_PASSWORD', 'postgres'),
+            'HOST': os.environ.get('DB_HOST', 'localhost'),
+            'PORT': os.environ.get('DB_PORT', '5432'),
+        }
+    }
 
 REST_FRAMEWORK = {
     # un-comment to configure auth again
-    "DEFAULT_AUTHENTICATION_CLASSES": [ 
+    "DEFAULT_AUTHENTICATION_CLASSES": [
         # "rest_framework_simplejwt.authentication.JWTAuthentication",
         # "rest_framework.authentication.SessionAuthentication", # for django-admin access
     ],
@@ -214,8 +229,23 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+# WhiteNoise configuration for serving static files
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Security settings for production
+if not DEBUG:
+    SECURE_BROWSER_XSS_FILTER = True
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+    X_FRAME_OPTIONS = 'DENY'
+    SECURE_HSTS_SECONDS = 31536000
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
