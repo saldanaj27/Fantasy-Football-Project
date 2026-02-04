@@ -53,7 +53,7 @@ export default function TeamStatsSection({ team, numGames }) {
   return (
     <div className="team-stats-section">
       <div className="team-header">
-        <h3>{team.abbreviation}</h3>
+        <h3>{team.abbreviation} <span className="team-record">({team.record})</span></h3>
         <p>{team.name}</p>
       </div>
 
