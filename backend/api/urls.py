@@ -11,5 +11,6 @@ router.register(r'games', views.GameViewSet, basename='game')
 router.register(r'analytics', analytics.AnalyticsViewSet, basename='analytics')
 
 urlpatterns = [
-    path("", include(router.urls))
+    path("", include(router.urls)),
+    path("predictions/", include('predictions.urls')),
 ]

@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'players',
     'games',
     'stats',
+    'predictions',
     'rest_framework',
     "corsheaders",
     'django.contrib.admin',
@@ -118,6 +119,7 @@ CACHE_TTL = {
     'players': 60 * 60,
     'team_stats': 60 * 10,
     'analytics': 60 * 15,
+    'predictions': 60 * 15,  # Cache predictions for 15 minutes
 }
 
 

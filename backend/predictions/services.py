@@ -132,8 +132,8 @@ class PredictionService:
         # Format response
         result = {
             'game_id': game_id,
-            'home_team': game.home_team.abbrev if game.home_team else 'UNK',
-            'away_team': game.away_team.abbrev if game.away_team else 'UNK',
+            'home_team': game.home_team.abbreviation if game.home_team else 'UNK',
+            'away_team': game.away_team.abbreviation if game.away_team else 'UNK',
             'game_date': game.date.isoformat() if game.date else None,
             'prediction': prediction,
             'model_version': self._model_version,
@@ -177,8 +177,8 @@ class PredictionService:
                 # Skip games we can't predict
                 predictions.append({
                     'game_id': game.id,
-                    'home_team': game.home_team.abbrev if game.home_team else 'UNK',
-                    'away_team': game.away_team.abbrev if game.away_team else 'UNK',
+                    'home_team': game.home_team.abbreviation if game.home_team else 'UNK',
+                    'away_team': game.away_team.abbreviation if game.away_team else 'UNK',
                     'error': str(e),
                 })
 
