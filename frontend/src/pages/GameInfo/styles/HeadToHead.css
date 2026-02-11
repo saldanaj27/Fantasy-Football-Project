@@ -1,0 +1,78 @@
+.h2h-section {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-md);
+  padding: 1.25rem;
+  margin-top: 1.5rem;
+}
+
+.h2h-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 1rem;
+}
+
+.h2h-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.h2h-team {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--text-primary);
+}
+
+.h2h-series {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.h2h-scroll {
+  overflow-x: auto;
+}
+
+.h2h-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8rem;
+}
+
+.h2h-table th {
+  text-align: center;
+  padding: 0.5rem;
+  background-color: var(--bg-tertiary);
+  color: var(--text-secondary);
+  font-weight: 600;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.h2h-table td {
+  text-align: center;
+  padding: 0.5rem;
+  border-bottom: 1px solid var(--border-light);
+  color: var(--text-primary);
+}
+
+.h2h-table .winner-cell {
+  font-weight: 700;
+  color: var(--accent-success);
+}
+
+.h2h-loading {
+  text-align: center;
+  color: var(--text-tertiary);
+  padding: 1rem;
+  font-size: 0.85rem;
+}
