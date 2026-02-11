@@ -94,6 +94,39 @@
   box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
 }
 
+/* FPTS Filters */
+.fpts-filters {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.fpts-filter-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.fpts-input {
+  width: 80px;
+  padding: 0.375rem 0.5rem;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-sm);
+  font-size: 0.8rem;
+  background-color: var(--bg-input);
+  color: var(--text-primary);
+}
+
+.fpts-input:focus {
+  outline: none;
+  border-color: var(--accent-primary);
+}
+
+.fpts-dash {
+  color: var(--text-tertiary);
+}
+
 /* Results info */
 .results-info {
   display: flex;

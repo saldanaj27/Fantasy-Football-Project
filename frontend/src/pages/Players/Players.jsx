@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useMemo } from 'react'
 import { searchPlayers, getTeams } from '../../api/players'
 import PlayerCard from './components/PlayerCard'
 import './styles/Players.css'
@@ -10,6 +10,8 @@ export default function Players() {
   const [search, setSearch] = useState('')
   const [position, setPosition] = useState('')
   const [team, setTeam] = useState('')
+  const [minFpts, setMinFpts] = useState('')
+  const [maxFpts, setMaxFpts] = useState('')
 
   // Debounce search
   const [debouncedSearch, setDebouncedSearch] = useState('')
@@ -26,7 +28,6 @@ export default function Players() {
     const loadTeams = async () => {
       try {
         const data = await getTeams()
-        // Sort teams alphabetically
         const sortedTeams = [...data].sort((a, b) =>
           a.abbreviation.localeCompare(b.abbreviation)
         )
@@ -60,6 +61,20 @@ export default function Players() {
   useEffect(() => {
     fetchPlayers()
   }, [fetchPlayers])
+
+  // Client-side FPTS filtering
+  const filteredPlayers = useMemo(() => {
+    let result = players
+    const min = minFpts !== '' ? parseFloat(minFpts) : null
+    const max = maxFpts !== '' ? parseFloat(maxFpts) : null
+    if (min !== null) {
+      result = result.filter(p => p.stats.avg_fantasy_points >= min)
+    }
+    if (max !== null) {
+      result = result.filter(p => p.stats.avg_fantasy_points <= max)
+    }
+    return result
+  }, [players, minFpts, maxFpts])
 
   return (
     <div className="players-page">
@@ -104,12 +119,35 @@ export default function Players() {
               ))}
             </select>
           </div>
+
+          <div className="fpts-filters">
+            <label className="fpts-filter-label">FPTS/G:</label>
+            <input
+              type="number"
+              className="fpts-input"
+              placeholder="Min"
+              value={minFpts}
+              onChange={(e) => setMinFpts(e.target.value)}
+              step="0.1"
+              min="0"
+            />
+            <span className="fpts-dash">-</span>
+            <input
+              type="number"
+              className="fpts-input"
+              placeholder="Max"
+              value={maxFpts}
+              onChange={(e) => setMaxFpts(e.target.value)}
+              step="0.1"
+              min="0"
+            />
+          </div>
         </div>
 
         {/* Results Info */}
         <div className="results-info">
           <span className="results-count">
-            {loading ? 'Searching...' : `${players.length} players found`}
+            {loading ? 'Searching...' : `${filteredPlayers.length} players found`}
           </span>
         </div>
 
@@ -118,9 +156,9 @@ export default function Players() {
           <div className="loading-container">
             <div className="loading-spinner"></div>
           </div>
-        ) : players.length > 0 ? (
+        ) : filteredPlayers.length > 0 ? (
           <div className="players-grid">
-            {players.map((player) => (
+            {filteredPlayers.map((player) => (
               <PlayerCard key={player.id} player={player} />
             ))}
           </div>
