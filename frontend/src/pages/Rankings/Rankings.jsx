@@ -1,5 +1,7 @@
 import { useState, useEffect, useMemo } from 'react'
 import { searchPlayers } from '../../api/players'
+import ExpandablePlayerRow from './components/ExpandablePlayerRow'
+import BestTeamCard from './components/BestTeamCard'
 import './styles/Rankings.css'
 
 const POSITIONS = ['ALL', 'QB', 'RB', 'WR', 'TE']
@@ -86,16 +88,6 @@ export default function Rankings() {
     return sortConfig.direction === 'desc' ? '▼' : '▲'
   }
 
-  // Get initials for placeholder
-  const getInitials = (name) => {
-    return name
-      .split(' ')
-      .map(n => n[0])
-      .join('')
-      .toUpperCase()
-      .slice(0, 2)
-  }
-
   // Define columns based on position filter
   const getColumns = () => {
     const baseColumns = [
@@ -161,6 +153,9 @@ export default function Rankings() {
           </div>
         </div>
 
+        {/* Best Team Card */}
+        <BestTeamCard numGames={numGames} />
+
         {/* Rankings Table */}
         {loading ? (
           <div className="loading-container">
@@ -185,60 +180,13 @@ export default function Rankings() {
               </thead>
               <tbody>
                 {paginatedPlayers.map((player, index) => (
-                  <tr key={player.id}>
-                    <td className="rank-cell">
-                      {(currentPage - 1) * PAGE_SIZE + index + 1}
-                    </td>
-                    <td>
-                      <div className="player-cell">
-                        {player.image_url ? (
-                          <img
-                            src={player.image_url}
-                            alt={player.name}
-                            className="player-image"
-                            onError={(e) => {
-                              e.target.style.display = 'none'
-                              e.target.nextSibling.style.display = 'flex'
-                            }}
-                          />
-                        ) : null}
-                        <div
-                          className="player-image-placeholder"
-                          style={{ display: player.image_url ? 'none' : 'flex' }}
-                        >
-                          {getInitials(player.name)}
-                        </div>
-                        <div className="player-info">
-                          <span className="player-name">{player.name}</span>
-                          <span className="player-team">
-                            <span className={`position-badge ${player.position.toLowerCase()}`}>
-                              {player.position}
-                            </span>
-                            {' '}{player.team}
-                          </span>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="fpts-cell">{player.stats.avg_fantasy_points.toFixed(1)}</td>
-                    <td className="stat-cell">{player.stats.total_fantasy_points.toFixed(1)}</td>
-                    <td className="stat-cell">{player.stats.games_played}</td>
-                    {(position === 'QB' || position === 'ALL') && (
-                      <td className="stat-cell">{player.stats.avg_pass_yards.toFixed(1)}</td>
-                    )}
-                    {position !== 'QB' && (
-                      <>
-                        <td className="stat-cell">{player.stats.avg_targets.toFixed(1)}</td>
-                        <td className="stat-cell">{player.stats.avg_receptions.toFixed(1)}</td>
-                        <td className="stat-cell">{player.stats.avg_receiving_yards.toFixed(1)}</td>
-                      </>
-                    )}
-                    {(position === 'RB' || position === 'ALL') && (
-                      <>
-                        <td className="stat-cell">{player.stats.avg_rush_attempts.toFixed(1)}</td>
-                        <td className="stat-cell">{player.stats.avg_rush_yards.toFixed(1)}</td>
-                      </>
-                    )}
-                  </tr>
+                  <ExpandablePlayerRow
+                    key={player.id}
+                    player={player}
+                    rank={(currentPage - 1) * PAGE_SIZE + index + 1}
+                    columns={columns}
+                    position={position}
+                  />
                 ))}
               </tbody>
             </table>

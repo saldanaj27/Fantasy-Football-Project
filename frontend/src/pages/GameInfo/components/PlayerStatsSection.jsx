@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import { getPlayerStats, getUsageMetrics } from "../../../api/analytics"
 import PlayerStatCard from "./PlayerStatCard"
 import UsageCharts from "./UsageCharts"
+import UsageTrendCharts from "./UsageTrendCharts"
 import "../styles/PlayerStatsSection.css"
 
 export default function PlayerStatsSection({ team, numGames }) {
@@ -48,6 +49,9 @@ export default function PlayerStatsSection({ team, numGames }) {
 
       {/* Usage Charts */}
       <UsageCharts usageMetrics={usageMetrics} />
+
+      {/* Usage Trend Lines */}
+      <UsageTrendCharts teamId={team.id} numGames={numGames} />
 
       {/* Position Tabs */}
       <div className="position-tabs">

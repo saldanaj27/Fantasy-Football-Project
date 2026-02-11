@@ -6,6 +6,9 @@ import TeamStatsSection from "./components/TeamStatsSection"
 import PlayerStatsSection from "./components/PlayerStatsSection"
 import GameTitle from "./components/GameTitle"
 import BoxScore from "./components/BoxScore"
+import PredictionCard from "./components/PredictionCard"
+import HeadToHead from "./components/HeadToHead"
+import CommonOpponents from "./components/CommonOpponents"
 import "./styles/GameInfo.css"
 
 export default function GameInfo() {
@@ -14,6 +17,7 @@ export default function GameInfo() {
   const [game, setGame] = useState(null)
   const [numGames, setNumGames] = useState(3)
   const [activeTab, setActiveTab] = useState('overview')
+  const [showActual, setShowActual] = useState(false)
 
   useEffect(() => {
     const fetchGame = async () => {
@@ -31,7 +35,8 @@ export default function GameInfo() {
     )
   }
 
-  const isFinished = game.home_score !== null
+  const isSimulated = game._simulation_masked === true
+  const isFinished = game.home_score !== null && !isSimulated
 
   return (
     <div className="game-info-container">
@@ -50,7 +55,7 @@ export default function GameInfo() {
             {isFinished ? (
               <>
                 <div className="game-summary">
-                  <h3 className="section-title">Final Score</h3>
+                  <h2 className="section-title">Final Score</h2>
                   <div className="final-score-display">
                     <div className="team-final">
                       <span className="team-abbr">{game.away_team.abbreviation}</span>
@@ -74,7 +79,9 @@ export default function GameInfo() {
               </>
             ) : (
               <div className="matchup-preview">
-                <h3 className="section-title">Matchup Preview</h3>
+                <h2 className="section-title">
+                  {isSimulated ? 'Simulated Matchup' : 'Matchup Preview'}
+                </h2>
                 <div className="preview-teams">
                   <div className="preview-team">
                     <span className="team-abbr">{game.away_team.abbreviation}</span>
@@ -88,8 +95,40 @@ export default function GameInfo() {
                     <span className="team-record">{game.home_team.record}</span>
                   </div>
                 </div>
+
+                {/* Reveal Actual Result toggle for simulated games */}
+                {isSimulated && game._actual_home_score != null && (
+                  <div className="reveal-actual">
+                    <button
+                      className="reveal-btn"
+                      onClick={() => setShowActual(!showActual)}
+                    >
+                      {showActual ? 'Hide Actual Result' : 'Reveal Actual Result'}
+                    </button>
+                    {showActual && (
+                      <div className="actual-score-display">
+                        <span className="actual-label">Actual Score</span>
+                        <div className="actual-score">
+                          <span>{game.away_team.abbreviation} {game._actual_away_score}</span>
+                          <span className="score-divider">-</span>
+                          <span>{game._actual_home_score} {game.home_team.abbreviation}</span>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* ML Prediction for upcoming / simulated games */}
+                <PredictionCard
+                  gameId={game.id}
+                  homeTeam={game.home_team.abbreviation}
+                  awayTeam={game.away_team.abbreviation}
+                />
               </div>
             )}
+
+            <HeadToHead team1={game.away_team} team2={game.home_team} />
+            <CommonOpponents team1={game.away_team} team2={game.home_team} season={game.season} />
 
             <div className="quick-links">
               <button

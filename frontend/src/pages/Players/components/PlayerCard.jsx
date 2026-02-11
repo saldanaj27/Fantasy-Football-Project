@@ -1,7 +1,37 @@
+import { useEffect, useState, useRef } from 'react'
+import { getPlayerTrend } from '../../../api/analytics'
+import Sparkline from '../../../components/Sparkline/Sparkline'
+import TrendBadge from '../../../components/TrendBadge/TrendBadge'
 import "../styles/PlayerCard.css"
 
 export default function PlayerCard({ player }) {
   const { name, position, team, image_url, stats } = player
+  const [trendData, setTrendData] = useState(null)
+  const [visible, setVisible] = useState(false)
+  const ref = useRef(null)
+
+  // Lazy-load trend data when card enters viewport
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) setVisible(true) },
+      { threshold: 0.1 }
+    )
+    if (ref.current) observer.observe(ref.current)
+    return () => observer.disconnect()
+  }, [])
+
+  useEffect(() => {
+    if (!visible) return
+    const fetchTrend = async () => {
+      try {
+        const data = await getPlayerTrend(player.id, 5)
+        setTrendData(data)
+      } catch (error) {
+        // silently fail - sparkline is optional
+      }
+    }
+    fetchTrend()
+  }, [visible, player.id])
 
   // Get initials for placeholder
   const getInitials = (name) => {
@@ -85,7 +115,7 @@ export default function PlayerCard({ player }) {
   }
 
   return (
-    <div className="player-card">
+    <div className="player-card" ref={ref}>
       <div className="player-card-header">
         {image_url ? (
           <img
@@ -118,10 +148,23 @@ export default function PlayerCard({ player }) {
         <div className="fantasy-points-badge">
           <span>{stats.avg_fantasy_points.toFixed(1)}</span>
           <span className="fantasy-points-label">PPR/G</span>
+          {trendData && <TrendBadge trend={trendData.trend} />}
         </div>
       </div>
 
       {renderStats()}
+
+      {trendData && trendData.per_game.length > 0 && (
+        <div className="player-card-sparkline">
+          <Sparkline
+            data={trendData.per_game.map(g => g.fantasy_points)}
+            width={120}
+            height={24}
+            color={trendData.trend === 'up' ? '#16a34a' : trendData.trend === 'down' ? '#dc2626' : '#6b7280'}
+          />
+          <span className="sparkline-label">Last {trendData.per_game.length}G trend</span>
+        </div>
+      )}
     </div>
   )
 }
