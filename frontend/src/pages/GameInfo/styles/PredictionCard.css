@@ -1,0 +1,332 @@
+/* PredictionCard.css - ML Prediction Display */
+
+.prediction-card {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-top: 1.5rem;
+  border: 1px solid #2a2a4a;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.prediction-card.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 150px;
+}
+
+.prediction-loading {
+  color: #888;
+  font-style: italic;
+}
+
+/* Header */
+.prediction-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid #2a2a4a;
+}
+
+.prediction-title {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #e0e0e0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.prediction-title::before {
+  content: '🤖';
+  font-size: 1rem;
+}
+
+/* Confidence Badge */
+.confidence-badge {
+  font-size: 0.75rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.confidence-badge.high {
+  background: rgba(34, 197, 94, 0.2);
+  color: #22c55e;
+  border: 1px solid rgba(34, 197, 94, 0.3);
+}
+
+.confidence-badge.medium {
+  background: rgba(234, 179, 8, 0.2);
+  color: #eab308;
+  border: 1px solid rgba(234, 179, 8, 0.3);
+}
+
+.confidence-badge.low {
+  background: rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+/* Win Probability Section */
+.win-probability-section {
+  margin-bottom: 1.25rem;
+}
+
+.probability-labels {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.probability-title {
+  font-size: 0.8rem;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.team-label {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.team-label.away {
+  color: #94a3b8;
+}
+
+.team-label.home {
+  color: #60a5fa;
+}
+
+.probability-bar-container {
+  display: flex;
+  height: 32px;
+  border-radius: 6px;
+  overflow: hidden;
+  background: #0a0a14;
+}
+
+.probability-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: width 0.5s ease;
+}
+
+.probability-bar.away {
+  background: linear-gradient(90deg, #475569 0%, #64748b 100%);
+}
+
+.probability-bar.home {
+  background: linear-gradient(90deg, #3b82f6 0%, #60a5fa 100%);
+}
+
+.probability-value {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: white;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+/* Predicted Score Section */
+.predicted-score-section {
+  margin-bottom: 1.25rem;
+  text-align: center;
+}
+
+.predicted-score-section h4 {
+  margin: 0 0 0.75rem 0;
+  font-size: 0.8rem;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.predicted-score {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+}
+
+.predicted-team {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.predicted-team .team-abbr {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #94a3b8;
+}
+
+.predicted-team.home .team-abbr {
+  color: #60a5fa;
+}
+
+.predicted-points {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #e0e0e0;
+}
+
+.score-separator {
+  font-size: 1.5rem;
+  color: #555;
+}
+
+/* Prediction Details */
+.prediction-details {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  padding: 1rem 0;
+  border-top: 1px solid #2a2a4a;
+  border-bottom: 1px solid #2a2a4a;
+  margin-bottom: 1rem;
+}
+
+.detail-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.detail-label {
+  font-size: 0.75rem;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.detail-value {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #e0e0e0;
+}
+
+/* Footer */
+.prediction-footer {
+  text-align: center;
+}
+
+.model-info {
+  font-size: 0.7rem;
+  color: #555;
+}
+
+/* Actual vs Predicted (Simulation) */
+.prediction-actual-section {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #2a2a4a;
+  text-align: center;
+}
+
+.prediction-actual-section h4 {
+  margin: 0 0 0.75rem 0;
+  font-size: 0.8rem;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.actual-comparison {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.actual-comparison-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+.comparison-team {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #94a3b8;
+  width: 40px;
+  text-align: right;
+}
+
+.comparison-predicted {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #e0e0e0;
+  width: 30px;
+  text-align: center;
+}
+
+.comparison-vs {
+  font-size: 0.7rem;
+  color: #555;
+}
+
+.comparison-actual {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #7c3aed;
+  width: 30px;
+  text-align: center;
+}
+
+.comparison-label {
+  font-size: 0.65rem;
+  color: #555;
+  text-transform: uppercase;
+}
+
+.winner-check {
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0.25rem 0.75rem;
+  border-radius: 4px;
+  display: inline-block;
+}
+
+.winner-check.correct {
+  background: rgba(34, 197, 94, 0.15);
+  color: #22c55e;
+}
+
+.winner-check.incorrect {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .prediction-card {
+    padding: 1rem;
+  }
+
+  .probability-bar-container {
+    height: 28px;
+  }
+
+  .probability-value {
+    font-size: 0.75rem;
+  }
+
+  .predicted-points {
+    font-size: 1.5rem;
+  }
+
+  .prediction-details {
+    gap: 1rem;
+  }
+}
