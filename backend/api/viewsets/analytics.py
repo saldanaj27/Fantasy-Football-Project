@@ -2,16 +2,19 @@ from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.db.models import Avg, Sum, F, Q, Count
+from django.db.models.functions import NullIf
 from django.core.cache import cache
 from django.conf import settings
 from games.models import Game
 from stats.models import FootballTeamGameStat, FootballPlayerGameStat
 from collections import defaultdict
 from players.models import Player
+from teams.models import Team
 from django.utils import timezone
+from api.simulation import SimulationMixin
 
 
-class AnalyticsViewSet(viewsets.ViewSet):
+class AnalyticsViewSet(SimulationMixin, viewsets.ViewSet):
     """
     GET API --> Recent team statistics over last N games
     Query params: 'team_id' (required), 'games' (default=3)
@@ -42,7 +45,7 @@ class AnalyticsViewSet(viewsets.ViewSet):
             pass_att=Avg('pass_attempts'),
             pass_yds=Avg('pass_yards'),
             pass_tds=Avg('pass_touchdowns'),
-            completion_pct=Avg(F('pass_completions') * 100.0 / F('pass_attempts')),
+            completion_pct=Avg(F('pass_completions') * 100.0 / NullIf(F('pass_attempts'), 0)),
 
             # Rushing stats
             rush_att=Avg('rush_attempts'),
@@ -571,11 +574,15 @@ class AnalyticsViewSet(viewsets.ViewSet):
                 avg_yac=Avg('yards_after_catch'),
             ))
 
-        # Get upcoming game
-        today = timezone.now().date()
+        # Get upcoming game (use simulation cutoff if active)
+        sim = self.get_simulation_context(request)
+        if sim.is_active and sim.cutoff_date:
+            cutoff = sim.cutoff_date
+        else:
+            cutoff = timezone.now().date()
         upcoming_game = (Game.objects
             .filter(Q(home_team=player.team) | Q(away_team=player.team))
-            .filter(date__gte=today)
+            .filter(date__gte=cutoff)
             .order_by('date')
             .first())
 
@@ -614,6 +621,7 @@ class AnalyticsViewSet(viewsets.ViewSet):
                 'game_id': upcoming_game.id,
                 'opponent': opponent.abbreviation,
                 'opponent_name': opponent.name,
+                'opponent_logo_url': opponent.logo_url,
                 'is_home': is_home,
                 'game_date': upcoming_game.date.isoformat(),
                 'game_time': upcoming_game.time,
@@ -665,4 +673,385 @@ class AnalyticsViewSet(viewsets.ViewSet):
             'opponent_defense': defense_ranking,
         }
 
+        return Response(response_data)
+
+    @action(detail=False, methods=['get'], url_path='team-game-log')
+    def team_game_log(self, request):
+        team_id = request.query_params.get('team_id')
+        num_games = int(request.query_params.get('games', 5))
+
+        if not team_id:
+            return Response({'Error': '\'team_id\' is required'}, status=400)
+
+        cache_key = f'team_game_log_{team_id}_{num_games}'
+        cached_data = cache.get(cache_key)
+        if cached_data:
+            return Response(cached_data)
+
+        team_stats = (FootballTeamGameStat.objects
+            .filter(team_id=team_id)
+            .select_related('game', 'game__home_team', 'game__away_team')
+            .order_by('-game__date')[:num_games])
+
+        games_list = []
+        for stat in team_stats:
+            game = stat.game
+            is_home = game.home_team_id == int(team_id)
+            opponent = game.away_team if is_home else game.home_team
+            team_score = game.home_score if is_home else game.away_score
+            opp_score = game.away_score if is_home else game.home_score
+
+            if team_score is None:
+                continue
+
+            if team_score > opp_score:
+                result = 'W'
+            elif team_score < opp_score:
+                result = 'L'
+            else:
+                result = 'T'
+
+            games_list.append({
+                'game_id': game.id,
+                'week': game.week,
+                'date': game.date.isoformat(),
+                'opponent': opponent.abbreviation,
+                'opponent_logo_url': opponent.logo_url,
+                'is_home': is_home,
+                'team_score': team_score,
+                'opp_score': opp_score,
+                'result': result,
+                'pass_yards': stat.pass_yards,
+                'rush_yards': stat.rush_yards,
+                'total_yards': stat.pass_yards + stat.rush_yards,
+                'pass_tds': stat.pass_touchdowns,
+                'rush_tds': stat.rush_touchdowns,
+                'turnovers': stat.interceptions + stat.fumbles_lost,
+                'sacks': stat.sacks,
+            })
+
+        response_data = {
+            'team_id': team_id,
+            'games': games_list,
+        }
+
+        cache.set(cache_key, response_data, settings.CACHE_TTL['analytics'])
+        return Response(response_data)
+
+    @action(detail=False, methods=['get'], url_path='head-to-head')
+    def head_to_head(self, request):
+        team1_id = request.query_params.get('team1_id')
+        team2_id = request.query_params.get('team2_id')
+        limit = int(request.query_params.get('limit', 5))
+
+        if not team1_id or not team2_id:
+            return Response({'Error': '\'team1_id\' and \'team2_id\' are required'}, status=400)
+
+        cache_key = f'head_to_head_{team1_id}_{team2_id}_{limit}'
+        cached_data = cache.get(cache_key)
+        if cached_data:
+            return Response(cached_data)
+
+        games = (Game.objects
+            .filter(
+                (Q(home_team_id=team1_id) & Q(away_team_id=team2_id)) |
+                (Q(home_team_id=team2_id) & Q(away_team_id=team1_id))
+            )
+            .exclude(home_score=None)
+            .order_by('-date')[:limit])
+
+        matchups = []
+        team1_wins = 0
+        team2_wins = 0
+        ties = 0
+
+        for game in games:
+            if game.home_team_id == int(team1_id):
+                t1_score = game.home_score
+                t2_score = game.away_score
+            else:
+                t1_score = game.away_score
+                t2_score = game.home_score
+
+            if t1_score > t2_score:
+                team1_wins += 1
+            elif t2_score > t1_score:
+                team2_wins += 1
+            else:
+                ties += 1
+
+            # Get team stats for this game
+            t1_stats = FootballTeamGameStat.objects.filter(game=game, team_id=team1_id).first()
+            t2_stats = FootballTeamGameStat.objects.filter(game=game, team_id=team2_id).first()
+
+            matchups.append({
+                'game_id': game.id,
+                'season': game.season,
+                'week': game.week,
+                'date': game.date.isoformat(),
+                'team1_score': t1_score,
+                'team2_score': t2_score,
+                'team1_total_yards': (t1_stats.pass_yards + t1_stats.rush_yards) if t1_stats else 0,
+                'team2_total_yards': (t2_stats.pass_yards + t2_stats.rush_yards) if t2_stats else 0,
+                'team1_turnovers': (t1_stats.interceptions + t1_stats.fumbles_lost) if t1_stats else 0,
+                'team2_turnovers': (t2_stats.interceptions + t2_stats.fumbles_lost) if t2_stats else 0,
+            })
+
+        response_data = {
+            'matchups': matchups,
+            'series_record': {
+                'team1_wins': team1_wins,
+                'team2_wins': team2_wins,
+                'ties': ties,
+            },
+        }
+
+        cache.set(cache_key, response_data, settings.CACHE_TTL['analytics'])
+        return Response(response_data)
+
+    @action(detail=False, methods=['get'], url_path='common-opponents')
+    def common_opponents(self, request):
+        team1_id = request.query_params.get('team1_id')
+        team2_id = request.query_params.get('team2_id')
+        season = request.query_params.get('season')
+
+        if not team1_id or not team2_id:
+            return Response({'Error': '\'team1_id\' and \'team2_id\' are required'}, status=400)
+
+        if not season:
+            return Response({'Error': '\'season\' is required'}, status=400)
+
+        cache_key = f'common_opponents_{team1_id}_{team2_id}_{season}'
+        cached_data = cache.get(cache_key)
+        if cached_data:
+            return Response(cached_data)
+
+        season = int(season)
+
+        # Find opponents each team played
+        def get_opponents_and_results(tid):
+            games = (Game.objects
+                .filter(Q(home_team_id=tid) | Q(away_team_id=tid), season=season)
+                .exclude(home_score=None)
+                .select_related('home_team', 'away_team'))
+
+            results = defaultdict(list)
+            for g in games:
+                is_home = g.home_team_id == int(tid)
+                opp = g.away_team if is_home else g.home_team
+                score = g.home_score if is_home else g.away_score
+                opp_score = g.away_score if is_home else g.home_score
+                results[opp.id].append({
+                    'score': score,
+                    'opp_score': opp_score,
+                    'week': g.week,
+                })
+            return results
+
+        t1_results = get_opponents_and_results(team1_id)
+        t2_results = get_opponents_and_results(team2_id)
+
+        # Exclude each other
+        common_ids = set(t1_results.keys()) & set(t2_results.keys())
+        common_ids.discard(int(team1_id))
+        common_ids.discard(int(team2_id))
+
+        common_opponents = []
+        for opp_id in common_ids:
+            try:
+                opp_team = Team.objects.get(id=opp_id)
+            except Team.DoesNotExist:
+                continue
+            common_opponents.append({
+                'opponent_abbreviation': opp_team.abbreviation,
+                'opponent_logo_url': opp_team.logo_url,
+                'team1_results': t1_results[opp_id],
+                'team2_results': t2_results[opp_id],
+            })
+
+        common_opponents.sort(key=lambda x: x['opponent_abbreviation'])
+
+        response_data = {
+            'common_opponents': common_opponents,
+        }
+
+        cache.set(cache_key, response_data, settings.CACHE_TTL['analytics'])
+        return Response(response_data)
+
+    @action(detail=False, methods=['get'], url_path='usage-trends')
+    def usage_trends(self, request):
+        team_id = request.query_params.get('team_id')
+        num_games = int(request.query_params.get('games', 5))
+
+        if not team_id:
+            return Response({'Error': '\'team_id\' is required'}, status=400)
+
+        cache_key = f'usage_trends_{team_id}_{num_games}'
+        cached_data = cache.get(cache_key)
+        if cached_data:
+            return Response(cached_data)
+
+        games = (Game.objects
+            .filter(Q(home_team_id=team_id) | Q(away_team_id=team_id))
+            .exclude(home_score=None)
+            .order_by('-date')[:num_games])
+
+        per_game = []
+        for game in reversed(list(games)):  # chronological order
+            player_stats = (FootballPlayerGameStat.objects
+                .filter(game=game, player__team_id=team_id)
+                .select_related('player'))
+
+            # Compute totals for the team in this game
+            total_targets = sum(ps.targets for ps in player_stats)
+            total_carries = sum(ps.rush_attempts for ps in player_stats)
+
+            target_shares = {}
+            carry_shares = {}
+            for ps in player_stats:
+                if ps.player.position in ['WR', 'TE'] and ps.targets > 0 and total_targets > 0:
+                    target_shares[ps.player.name] = round(ps.targets / total_targets * 100, 1)
+                if ps.player.position == 'RB' and ps.rush_attempts > 0 and total_carries > 0:
+                    carry_shares[ps.player.name] = round(ps.rush_attempts / total_carries * 100, 1)
+
+            per_game.append({
+                'week': game.week,
+                'target_shares': target_shares,
+                'carry_shares': carry_shares,
+            })
+
+        response_data = {
+            'team_id': team_id,
+            'per_game': per_game,
+        }
+
+        cache.set(cache_key, response_data, settings.CACHE_TTL['analytics'])
+        return Response(response_data)
+
+    @action(detail=False, methods=['get'], url_path='player-trend')
+    def player_trend(self, request):
+        player_id = request.query_params.get('player_id')
+        num_games = int(request.query_params.get('games', 10))
+
+        if not player_id:
+            return Response({'Error': '\'player_id\' is required'}, status=400)
+
+        cache_key = f'player_trend_{player_id}_{num_games}'
+        cached_data = cache.get(cache_key)
+        if cached_data:
+            return Response(cached_data)
+
+        try:
+            player = Player.objects.select_related('team').get(id=player_id)
+        except Player.DoesNotExist:
+            return Response({'Error': 'Player not found'}, status=404)
+
+        games = (Game.objects
+            .filter(Q(home_team=player.team) | Q(away_team=player.team))
+            .exclude(home_score=None)
+            .order_by('-date')[:num_games]
+            .values_list('id', flat=True))
+
+        stats = (FootballPlayerGameStat.objects
+            .filter(player_id=player_id, game_id__in=games)
+            .select_related('game', 'game__home_team', 'game__away_team')
+            .order_by('game__date'))
+
+        per_game = []
+        all_fpts = []
+        for s in stats:
+            g = s.game
+            opponent = g.away_team if g.home_team_id == player.team_id else g.home_team
+            fpts = round(s.fantasy_points_ppr, 1)
+            all_fpts.append(fpts)
+            per_game.append({
+                'week': g.week,
+                'opponent': opponent.abbreviation,
+                'fantasy_points': fpts,
+                'pass_yards': s.pass_yards,
+                'rush_yards': s.rush_yards,
+                'receiving_yards': s.receiving_yards,
+                'targets': s.targets,
+                'receptions': s.receptions,
+            })
+
+        season_avg = round(sum(all_fpts) / len(all_fpts), 1) if all_fpts else 0
+        last_3 = all_fpts[-3:] if len(all_fpts) >= 3 else all_fpts
+        last_3_avg = round(sum(last_3) / len(last_3), 1) if last_3 else 0
+
+        if last_3_avg > season_avg * 1.1:
+            trend = 'up'
+        elif last_3_avg < season_avg * 0.9:
+            trend = 'down'
+        else:
+            trend = 'stable'
+
+        response_data = {
+            'player_id': int(player_id),
+            'name': player.name,
+            'per_game': per_game,
+            'season_avg': season_avg,
+            'last_3_avg': last_3_avg,
+            'trend': trend,
+        }
+
+        cache.set(cache_key, response_data, settings.CACHE_TTL['analytics'])
+        return Response(response_data)
+
+    @action(detail=False, methods=['get'], url_path='best-team')
+    def best_team(self, request):
+        num_games = int(request.query_params.get('games', 3))
+
+        cache_key = f'best_team_{num_games}'
+        cached_data = cache.get(cache_key)
+        if cached_data:
+            return Response(cached_data)
+
+        from django.db.models import Avg as DjAvg
+
+        # Get players with avg fantasy points
+        player_stats = (FootballPlayerGameStat.objects
+            .values('player_id', 'player__name', 'player__position', 'player__team__abbreviation', 'player__image_url')
+            .annotate(
+                avg_fpts=DjAvg('fantasy_points_ppr'),
+                games_played=Count('id'),
+            )
+            .filter(games_played__gte=1)
+            .order_by('-avg_fpts'))
+
+        # Filter to recent N games per player
+        # For simplicity, we use overall averages but filter by min games
+        position_limits = {'QB': 1, 'RB': 2, 'WR': 2, 'TE': 1}
+        roster = {'QB': [], 'RB': [], 'WR': [], 'TE': [], 'FLEX': []}
+        flex_candidates = []
+
+        for ps in player_stats:
+            pos = ps['player__position']
+            if pos not in position_limits:
+                continue
+            entry = {
+                'player_id': ps['player_id'],
+                'name': ps['player__name'],
+                'position': pos,
+                'team': ps['player__team__abbreviation'],
+                'image_url': ps['player__image_url'],
+                'avg_fpts': round(ps['avg_fpts'], 1),
+            }
+            if len(roster[pos]) < position_limits[pos]:
+                roster[pos].append(entry)
+            elif pos in ['RB', 'WR', 'TE'] and len(roster['FLEX']) == 0:
+                roster['FLEX'].append(entry)
+
+        total = sum(
+            p['avg_fpts']
+            for slot in roster.values()
+            for p in slot
+        )
+
+        response_data = {
+            'roster': roster,
+            'projected_weekly_total': round(total, 1),
+        }
+
+        cache.set(cache_key, response_data, settings.CACHE_TTL['analytics'])
         return Response(response_data)

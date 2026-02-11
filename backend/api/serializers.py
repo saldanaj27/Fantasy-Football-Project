@@ -32,6 +32,11 @@ class TeamWithRecordSerializer(serializers.ModelSerializer):
             away_score__isnull=False
         )
 
+        # In simulation mode, only count games before the simulated week
+        simulation_week = self.context.get('simulation_week')
+        if simulation_week is not None:
+            completed_games = completed_games.filter(week__lt=simulation_week)
+
         wins = 0
         losses = 0
         ties = 0
@@ -86,4 +91,9 @@ class GameSerializer(serializers.ModelSerializer):
         # Pass season context to nested team serializers
         self.fields['home_team'].context['season'] = instance.season
         self.fields['away_team'].context['season'] = instance.season
+        # Pass simulation context to nested team serializers
+        simulation_week = self.context.get('simulation_week')
+        if simulation_week is not None:
+            self.fields['home_team'].context['simulation_week'] = simulation_week
+            self.fields['away_team'].context['simulation_week'] = simulation_week
         return super().to_representation(instance)
