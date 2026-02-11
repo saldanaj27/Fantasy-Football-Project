@@ -111,3 +111,33 @@ export async function getGameBoxScore(gameId) {
   const response = await api.get(`analytics/game-box-score/?game_id=${gameId}`)
   return response.data
 }
+
+export async function getTeamGameLog(teamId, numGames = 5) {
+  const response = await api.get(`analytics/team-game-log/?team_id=${teamId}&games=${numGames}`)
+  return response.data
+}
+
+export async function getHeadToHead(team1Id, team2Id, limit = 5) {
+  const response = await api.get(`analytics/head-to-head/?team1_id=${team1Id}&team2_id=${team2Id}&limit=${limit}`)
+  return response.data
+}
+
+export async function getCommonOpponents(team1Id, team2Id, season) {
+  const response = await api.get(`analytics/common-opponents/?team1_id=${team1Id}&team2_id=${team2Id}&season=${season}`)
+  return response.data
+}
+
+export async function getUsageTrends(teamId, numGames = 5) {
+  const response = await api.get(`analytics/usage-trends/?team_id=${teamId}&games=${numGames}`)
+  return response.data
+}
+
+export async function getPlayerTrend(playerId, numGames = 10) {
+  const response = await api.get(`analytics/player-trend/?player_id=${playerId}&games=${numGames}`)
+  return response.data
+}
+
+export async function getBestTeam(numGames = 3) {
+  const response = await api.get(`analytics/best-team/?games=${numGames}`)
+  return response.data
+}
