@@ -1,0 +1,114 @@
+.best-team-card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-md);
+  margin-bottom: 1.5rem;
+  overflow: hidden;
+}
+
+.best-team-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.25rem;
+  background: var(--gradient-header);
+  color: white;
+}
+
+.best-team-title {
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.best-team-total {
+  text-align: right;
+}
+
+.total-label {
+  display: block;
+  font-size: 0.65rem;
+  opacity: 0.8;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.total-value {
+  font-size: 1.25rem;
+  font-weight: 800;
+}
+
+.best-team-roster {
+  padding: 0.5rem 0;
+}
+
+.roster-slot {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 1.25rem;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.roster-slot:last-child {
+  border-bottom: none;
+}
+
+.slot-label {
+  width: 40px;
+  text-align: center;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.2rem 0.25rem;
+  border-radius: var(--border-radius-sm);
+}
+
+.slot-label.qb { background-color: var(--qb-bg); color: var(--qb-text); }
+.slot-label.rb { background-color: var(--rb-bg); color: var(--rb-text); }
+.slot-label.wr { background-color: var(--wr-bg); color: var(--wr-text); }
+.slot-label.te { background-color: var(--te-bg); color: var(--te-text); }
+.slot-label.flex { background-color: var(--bg-tertiary); color: var(--text-secondary); }
+
+.slot-player {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1;
+}
+
+.slot-image {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.slot-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.slot-name {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.slot-team {
+  font-size: 0.65rem;
+  color: var(--text-tertiary);
+}
+
+.slot-fpts {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--accent-primary);
+  min-width: 40px;
+  text-align: right;
+}
+
+.best-team-loading {
+  text-align: center;
+  color: var(--text-tertiary);
+  padding: 1rem;
+  font-size: 0.85rem;
+}
