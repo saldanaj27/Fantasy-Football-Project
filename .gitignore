@@ -1,0 +1,48 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+*.egg
+dist/
+build/
+
+# Virtual environments
+env/
+venv/
+.venv/
+
+# Django
+db.sqlite3
+staticfiles/
+media/
+
+# Environment files
+.env
+*.env.local
+
+# Redis
+*.rdb
+dump.rdb
+
+# ML artifacts
+*.joblib
+
+# Celery
+celery.log
+celerybeat-schedule
+celerybeat-schedule.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Node
+node_modules/
+dist/
+.cache/

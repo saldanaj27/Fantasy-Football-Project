@@ -12,6 +12,9 @@ db.sqlite3
 /env
 .env
 
+# ML artifacts
+predictions/trained_models/*.joblib
+
 # IDE/OS
 .vscode/
 .DS_Store
