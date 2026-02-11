@@ -96,17 +96,14 @@ jobs:
       - name: Check formatting with Black
         working-directory: backend
         run: black --check --diff .
-        continue-on-error: true
 
       - name: Check imports with isort
         working-directory: backend
         run: isort --check-only --diff .
-        continue-on-error: true
 
       - name: Lint with flake8
         working-directory: backend
         run: flake8 --max-line-length=120 --exclude=env,migrations .
-        continue-on-error: true
 
   # Frontend Tests
   frontend-test:
@@ -155,7 +152,6 @@ jobs:
       - name: Lint
         working-directory: frontend
         run: npm run lint
-        continue-on-error: true
 
       - name: Build
         working-directory: frontend
@@ -166,7 +162,7 @@ jobs:
   # Summary job that requires all others to pass
   ci-success:
     name: CI Success
-    needs: [backend-test, frontend-test, frontend-lint-build]
+    needs: [backend-test, backend-lint, frontend-test, frontend-lint-build]
     runs-on: ubuntu-latest
     if: always()
 
@@ -174,6 +170,7 @@ jobs:
       - name: Check all jobs passed
         run: |
           if [[ "${{ needs.backend-test.result }}" != "success" ]] || \
+             [[ "${{ needs.backend-lint.result }}" != "success" ]] || \
              [[ "${{ needs.frontend-test.result }}" != "success" ]] || \
              [[ "${{ needs.frontend-lint-build.result }}" != "success" ]]; then
             echo "One or more jobs failed"
