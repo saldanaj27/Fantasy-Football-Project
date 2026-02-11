@@ -51,8 +51,9 @@ A full-stack fantasy football analytics platform that provides comprehensive NFL
 
 2. **Set up environment variables**
    ```bash
-   cp .env.example .env
-   # Edit .env with your configuration
+   cp backend/.env.example backend/.env
+   cp frontend/.env.example frontend/.env
+   # Edit both .env files with your configuration
    ```
 
 3. **Start database services**
@@ -115,13 +116,19 @@ Fantasy-Football-Project/
 │   ├── players/             # Player model
 │   ├── stats/               # Player and team statistics
 │   ├── teams/               # Team model
+│   ├── predictions/         # ML prediction pipeline
+│   │   ├── features.py      # Feature extraction
+│   │   ├── ml_models.py     # ML models (winner, spread, total)
+│   │   ├── services.py      # PredictionService singleton
+│   │   └── trained_models/  # Saved model files (not in git)
 │   └── untitled_football_project/  # Django settings
 │
 ├── frontend/
 │   ├── src/
 │   │   ├── api/             # API client functions
 │   │   ├── components/      # Reusable components
-│   │   │   └── NavBar/      # Navigation with theme toggle
+│   │   │   ├── NavBar/      # Navigation with theme toggle
+│   │   │   └── ErrorBoundary/ # Global error boundary
 │   │   ├── context/         # React context (ThemeContext)
 │   │   ├── pages/           # Page components
 │   │   │   ├── Landing/     # Home landing page
@@ -129,11 +136,16 @@ Fantasy-Football-Project/
 │   │   │   ├── GameInfo/    # Game detail with tabs
 │   │   │   ├── Players/     # Player search
 │   │   │   ├── Rankings/    # Fantasy rankings
-│   │   │   └── StartSit/    # Player comparison
+│   │   │   ├── StartSit/    # Player comparison
+│   │   │   └── NotFound/    # 404 page
 │   │   └── styles/          # Global CSS (theme variables)
 │   └── index.html
 │
-└── docker-compose.yml       # Database services
+├── nginx/                   # Production nginx config
+├── .github/workflows/       # CI/CD (ci.yml, deploy.yml)
+├── docker-compose.yml       # Dev: PostgreSQL + Redis
+├── docker-compose.prod.yml  # Prod: full stack with nginx
+└── Dockerfile               # Backend container
 ```
 
 ## API Endpoints
