@@ -14,6 +14,11 @@
   box-shadow: var(--shadow-lg);
 }
 
+.gamebox:focus-visible {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 2px;
+}
+
 /* Header with status and time */
 .gamebox-header {
   display: flex;
@@ -53,6 +58,11 @@
   color: #3b82f6;
 }
 
+.game-status.simulated {
+  background-color: rgba(124, 58, 237, 0.2);
+  color: #7c3aed;
+}
+
 .game-status.live {
   background-color: var(--accent-primary);
   color: white;
@@ -73,6 +83,7 @@
 .team-row {
   display: flex;
   align-items: center;
+  gap: var(--spacing-sm);
   padding: 0.75rem;
   border-bottom: 1px solid var(--border-light);
 }

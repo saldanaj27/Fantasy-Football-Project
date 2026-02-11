@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { searchPlayers } from '../../api/players'
 import { getPlayerComparison } from '../../api/analytics'
+import TeamLogo from '../../components/TeamLogo/TeamLogo'
 import './styles/StartSit.css'
 
 export default function StartSit() {
@@ -214,7 +215,9 @@ export default function StartSit() {
           <div className="matchup-section">
             <div className="matchup-header">
               <span className="matchup-opponent">
-                {matchup.is_home ? 'vs' : '@'} {matchup.opponent}
+                {matchup.is_home ? 'vs' : '@'}{' '}
+                <TeamLogo logoUrl={matchup.opponent_logo_url} abbreviation={matchup.opponent} size="sm" />
+                {matchup.opponent}
               </span>
               <span className="matchup-details">
                 {new Date(matchup.game_date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}

@@ -3,6 +3,9 @@
 }
 
 .team-header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
   background: linear-gradient(to bottom right, #3b82f6, #2563eb);
   color: white;
   padding: 1.5rem;

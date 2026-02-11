@@ -1,7 +1,10 @@
 import { useEffect, useState } from "react"
-import { getDefenseAllowed, getRecentStats } from '../../../api/analytics'
+import { getDefenseAllowed, getRecentStats, getTeamGameLog } from '../../../api/analytics'
 import StatCard from "./StatCard"
 import PositionStatCard from "./PositionStatCard"
+import TeamLogo from '../../../components/TeamLogo/TeamLogo'
+import GameLogTable from "./GameLogTable"
+import StatTrendCharts from "./StatTrendCharts"
 import "../styles/TeamStatsSection.css"
 
 export default function TeamStatsSection({ team, numGames }) {
@@ -10,26 +13,28 @@ export default function TeamStatsSection({ team, numGames }) {
   const [wrStats, setWrStats] = useState(null)
   const [teStats, setTeStats] = useState(null)
   const [qbStats, setQbStats] = useState(null)
+  const [gameLog, setGameLog] = useState(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     const fetchAllData = async () => {
       setLoading(true)
       try {
-        // Fetch all stats in parallel
-        const [teamData, rbData, wrData, teData, qbData] = await Promise.all([
+        const [teamData, rbData, wrData, teData, qbData, gameLogData] = await Promise.all([
           getRecentStats(numGames, team.id),
           getDefenseAllowed(numGames, team.id, 'RB'),
           getDefenseAllowed(numGames, team.id, 'WR'),
           getDefenseAllowed(numGames, team.id, 'TE'),
-          getDefenseAllowed(numGames, team.id, 'QB')
+          getDefenseAllowed(numGames, team.id, 'QB'),
+          getTeamGameLog(team.id, numGames)
         ])
-        
+
         setTeamStats(teamData)
         setRbStats(rbData)
         setWrStats(wrData)
         setTeStats(teData)
         setQbStats(qbData)
+        setGameLog(gameLogData)
       } catch (error) {
         console.error('Error fetching team data:', error)
       } finally {
@@ -53,8 +58,11 @@ export default function TeamStatsSection({ team, numGames }) {
   return (
     <div className="team-stats-section">
       <div className="team-header">
-        <h3>{team.abbreviation} <span className="team-record">({team.record})</span></h3>
-        <p>{team.name}</p>
+        <TeamLogo logoUrl={team.logo_url} abbreviation={team.abbreviation} size="md" />
+        <div>
+          <h3>{team.abbreviation} <span className="team-record">({team.record})</span></h3>
+          <p>{team.name}</p>
+        </div>
       </div>
 
       {/* Offensive Team Stats */}
@@ -64,32 +72,38 @@ export default function TeamStatsSection({ team, numGames }) {
           Offensive Stats (Last {numGames} Games)
         </h4>
         <div className="stats-grid">
-          <StatCard 
-            title="Points/Game" 
+          <StatCard
+            title="Points/Game"
             value={teamStats.points_per_game.toFixed(1)}
           />
-          <StatCard 
-            title="Total Yards/Game" 
+          <StatCard
+            title="Total Yards/Game"
             value={teamStats.total_yards_per_game.toFixed(0)}
           />
-          <StatCard 
-            title="Pass Yards/Game" 
+          <StatCard
+            title="Pass Yards/Game"
             value={teamStats.passing.total_yards_average.toFixed(1)}
             subtitle={`${(teamStats.passing.completion_percentage).toFixed(1)}% comp`}
           />
-          <StatCard 
-            title="Rush Yards/Game" 
+          <StatCard
+            title="Rush Yards/Game"
             value={teamStats.rushing.total_yards_average.toFixed(1)}
           />
-          <StatCard 
-            title="Pass TDs/Game" 
+          <StatCard
+            title="Pass TDs/Game"
             value={teamStats.passing.touchdowns.toFixed(1)}
           />
-          <StatCard 
-            title="Rush TDs/Game" 
+          <StatCard
+            title="Rush TDs/Game"
             value={teamStats.rushing.touchdowns.toFixed(1)}
           />
         </div>
+
+        {/* Stat Trend Charts */}
+        {gameLog && <StatTrendCharts games={gameLog.games} />}
+
+        {/* Game Log Table */}
+        {gameLog && <GameLogTable games={gameLog.games} />}
 
         <div className="turnover-differential">
           <div className="turnover-differential-content">
@@ -110,7 +124,7 @@ export default function TeamStatsSection({ team, numGames }) {
           <span className="section-title-bar defense"></span>
           Defense vs Position (Last {numGames} Games)
         </h4>
-        
+
         <PositionStatCard position="QB" stats={qbStats} numGames={numGames} />
         <PositionStatCard position="RB" stats={rbStats} numGames={numGames} />
         <PositionStatCard position="WR" stats={wrStats} numGames={numGames} />

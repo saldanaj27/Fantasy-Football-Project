@@ -1,9 +1,11 @@
 import "./GameBox.css"
 import { useNavigate } from 'react-router-dom'
+import TeamLogo from '../../../components/TeamLogo/TeamLogo'
 
 export default function GameBox({ game }) {
   const navigate = useNavigate()
-  const isFinished = game.home_score !== null
+  const isSimulated = game._simulation_masked === true
+  const isFinished = game.home_score !== null && !isSimulated
 
   const handleClick = () => {
     navigate(`/game/${game.id}`)
@@ -30,11 +32,11 @@ export default function GameBox({ game }) {
   }
 
   return (
-    <div className="gamebox" onClick={handleClick}>
+    <div className="gamebox" onClick={handleClick} role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleClick() } }}>
       {/* Header */}
       <div className="gamebox-header">
-        <span className={`game-status ${isFinished ? 'final' : 'upcoming'}`}>
-          {isFinished ? 'Final' : formatTime(game.time)}
+        <span className={`game-status ${isSimulated ? 'simulated' : isFinished ? 'final' : 'upcoming'}`}>
+          {isSimulated ? 'Simulated' : isFinished ? 'Final' : formatTime(game.time)}
         </span>
         <span className="game-time">
           {formatDate(game.date)}
@@ -43,6 +45,7 @@ export default function GameBox({ game }) {
 
       {/* Away Team Row */}
       <div className={`team-row ${awayWins ? 'winner' : ''}`}>
+        <TeamLogo logoUrl={game.away_team.logo_url} abbreviation={game.away_team.abbreviation} size="sm" />
         <span className="team-abbr">{game.away_team.abbreviation}</span>
         <span className="team-name">{game.away_team.name}</span>
         <span className="team-record">{game.away_team.record}</span>
@@ -53,6 +56,7 @@ export default function GameBox({ game }) {
 
       {/* Home Team Row */}
       <div className={`team-row ${homeWins ? 'winner' : ''}`}>
+        <TeamLogo logoUrl={game.home_team.logo_url} abbreviation={game.home_team.abbreviation} size="sm" />
         <span className="team-abbr">{game.home_team.abbreviation}</span>
         <span className="team-name">{game.home_team.name}</span>
         <span className="team-record">{game.home_team.record}</span>

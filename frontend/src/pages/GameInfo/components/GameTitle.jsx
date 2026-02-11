@@ -1,4 +1,5 @@
 import "../styles/GameTitle.css"
+import TeamLogo from '../../../components/TeamLogo/TeamLogo'
 
 export default function GameTitle({ game }) {
   const isFinished = game.home_score !== null
@@ -67,8 +68,12 @@ export default function GameTitle({ game }) {
     <div className="game-title-container">
       <div className="game-title-content">
         <div className="game-title-info">
-          <h1>
-            {game.away_team.abbreviation} <span className="team-record">({game.away_team.record})</span> @ {game.home_team.abbreviation} <span className="team-record">({game.home_team.record})</span>
+          <h1 className="game-title-h1">
+            <TeamLogo logoUrl={game.away_team.logo_url} abbreviation={game.away_team.abbreviation} size="lg" />
+            {game.away_team.abbreviation} <span className="team-record">({game.away_team.record})</span>
+            {' '}@{' '}
+            <TeamLogo logoUrl={game.home_team.logo_url} abbreviation={game.home_team.abbreviation} size="lg" />
+            {game.home_team.abbreviation} <span className="team-record">({game.home_team.record})</span>
           </h1>
           <div className="game-title-details">
             <span>{formatDate(game.date)}</span>

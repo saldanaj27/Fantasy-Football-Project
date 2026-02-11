@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { getGameBoxScore } from '../../../api/analytics'
+import TeamLogo from '../../../components/TeamLogo/TeamLogo'
 import '../styles/BoxScore.css'
 
 export default function BoxScore({ gameId }) {
@@ -60,9 +61,15 @@ export default function BoxScore({ gameId }) {
       {/* Team Stats Comparison */}
       <div className="box-score-stats">
         <div className="box-score-header">
-          <div className="stat-team away">{away_team.abbreviation}</div>
+          <div className="stat-team away">
+            <TeamLogo logoUrl={away_team.logo_url} abbreviation={away_team.abbreviation} size="sm" />
+            {away_team.abbreviation}
+          </div>
           <div className="stat-label-center">Stat</div>
-          <div className="stat-team home">{home_team.abbreviation}</div>
+          <div className="stat-team home">
+            <TeamLogo logoUrl={home_team.logo_url} abbreviation={home_team.abbreviation} size="sm" />
+            {home_team.abbreviation}
+          </div>
         </div>
 
         {away_team.stats && home_team.stats && (

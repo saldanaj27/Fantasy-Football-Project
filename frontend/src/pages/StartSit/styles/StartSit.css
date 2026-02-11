@@ -291,6 +291,9 @@
 }
 
 .matchup-opponent {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
   color: var(--text-primary);
   font-weight: 600;
 }

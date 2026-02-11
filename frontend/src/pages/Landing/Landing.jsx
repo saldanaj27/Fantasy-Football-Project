@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import { getCurrentWeekGames } from '../../api/games'
+import TeamLogo from '../../components/TeamLogo/TeamLogo'
 import './Landing.css'
 
 export default function Landing() {
@@ -9,14 +10,18 @@ export default function Landing() {
 
   useEffect(() => {
     const fetchData = async () => {
-      const games = await getCurrentWeekGames()
-      if (games.length > 0) {
-        setCurrentWeek(games[0].week)
-        // Get first 3 upcoming games
-        const upcoming = games
-          .filter(g => g.home_score === null)
-          .slice(0, 3)
-        setUpcomingGames(upcoming)
+      try {
+        const games = await getCurrentWeekGames()
+        if (games.length > 0) {
+          setCurrentWeek(games[0].week)
+          // Get first 3 upcoming games
+          const upcoming = games
+            .filter(g => g.home_score === null)
+            .slice(0, 3)
+          setUpcomingGames(upcoming)
+        }
+      } catch (err) {
+        console.error('Failed to fetch current week games:', err)
       }
     }
     fetchData()
@@ -81,8 +86,8 @@ export default function Landing() {
         <div className="features-grid">
           {features.map((feature) => (
             <Link key={feature.to} to={feature.to} className="feature-card">
-              <span className="feature-icon">{feature.icon}</span>
-              <h3 className="feature-title">{feature.title}</h3>
+              <span className="feature-icon" role="img" aria-label={feature.title}>{feature.icon}</span>
+              <h2 className="feature-title">{feature.title}</h2>
               <p className="feature-description">{feature.description}</p>
               <span className="feature-arrow">→</span>
             </Link>
@@ -102,6 +107,7 @@ export default function Landing() {
               <Link key={game.id} to={`/game/${game.id}`} className="preview-game-card">
                 <div className="preview-teams">
                   <span className="preview-team">
+                    <TeamLogo logoUrl={game.away_team.logo_url} abbreviation={game.away_team.abbreviation} size="sm" />
                     {game.away_team.abbreviation}
                     {game.away_team.record && (
                       <span className="preview-record">{game.away_team.record}</span>
@@ -109,6 +115,7 @@ export default function Landing() {
                   </span>
                   <span className="preview-at">@</span>
                   <span className="preview-team">
+                    <TeamLogo logoUrl={game.home_team.logo_url} abbreviation={game.home_team.abbreviation} size="sm" />
                     {game.home_team.abbreviation}
                     {game.home_team.record && (
                       <span className="preview-record">{game.home_team.record}</span>

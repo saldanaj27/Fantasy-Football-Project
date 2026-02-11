@@ -19,6 +19,13 @@
   margin-bottom: 0.5rem;
 }
 
+.game-title-h1 {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  flex-wrap: wrap;
+}
+
 .game-title-info h1 .team-record {
   font-size: 1rem;
   font-weight: 500;

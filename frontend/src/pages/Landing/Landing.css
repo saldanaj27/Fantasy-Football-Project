@@ -208,6 +208,9 @@
 }
 
 .preview-team {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
   font-weight: 700;
   font-size: 1.1rem;
   color: var(--text-primary);
