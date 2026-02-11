@@ -26,49 +26,58 @@ export default function Scores() {
   const [season, setSeason] = useState(2025)
   const [games, setGames] = useState([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
 
   // Initialize with current/most recent week
   useEffect(() => {
     const initializeWeek = async () => {
       setLoading(true)
+      setError(null)
 
-      // First try to get upcoming games
-      const upcomingData = await getCurrentWeekGames()
+      try {
+        // First try to get upcoming games
+        const upcomingData = await getCurrentWeekGames()
 
-      if (upcomingData.length > 0) {
-        // Sort by date and use the first game's week
-        const sortedGames = [...upcomingData].sort((a, b) => {
-          const dateA = new Date(`${a.date}T${a.time}`)
-          const dateB = new Date(`${b.date}T${b.time}`)
-          return dateA - dateB
-        })
-        setWeek(sortedGames[0].week)
-        setSeason(sortedGames[0].season)
-        setGames(sortedGames)
-        setLoading(false)
-        return
-      }
-
-      // No upcoming games - search backwards for most recent week with games
-      // Start from week 22 (Super Bowl) and go back
-      for (let w = 22; w >= 1; w--) {
-        const data = await getGames(season, w)
-        if (data.length > 0) {
-          const sortedGames = [...data].sort((a, b) => {
+        if (upcomingData.length > 0) {
+          // Sort by date and use the first game's week
+          const sortedGames = [...upcomingData].sort((a, b) => {
             const dateA = new Date(`${a.date}T${a.time}`)
             const dateB = new Date(`${b.date}T${b.time}`)
             return dateA - dateB
           })
-          setWeek(w)
+          setWeek(sortedGames[0].week)
+          setSeason(sortedGames[0].season)
           setGames(sortedGames)
           setLoading(false)
           return
         }
-      }
 
-      // If still no games found, default to week 1
-      setWeek(1)
-      setLoading(false)
+        // No upcoming games - search backwards for most recent week with games
+        // Start from week 22 (Super Bowl) and go back
+        for (let w = 22; w >= 1; w--) {
+          const data = await getGames(season, w)
+          if (data.length > 0) {
+            const sortedGames = [...data].sort((a, b) => {
+              const dateA = new Date(`${a.date}T${a.time}`)
+              const dateB = new Date(`${b.date}T${b.time}`)
+              return dateA - dateB
+            })
+            setWeek(w)
+            setGames(sortedGames)
+            setLoading(false)
+            return
+          }
+        }
+
+        // If still no games found, default to week 1
+        setWeek(1)
+        setLoading(false)
+      } catch (err) {
+        console.error('Failed to initialize week:', err)
+        setError('Failed to load games. Please try again.')
+        setWeek(1)
+        setLoading(false)
+      }
     }
 
     initializeWeek()
@@ -78,16 +87,25 @@ export default function Scores() {
   const handleWeekChange = async (newWeek) => {
     setWeek(newWeek)
     setLoading(true)
-    const data = await getGames(season, newWeek)
+    setError(null)
 
-    const sortedGames = [...data].sort((a, b) => {
-      const dateA = new Date(`${a.date}T${a.time}`)
-      const dateB = new Date(`${b.date}T${b.time}`)
-      return dateA - dateB
-    })
+    try {
+      const data = await getGames(season, newWeek)
 
-    setGames(sortedGames)
-    setLoading(false)
+      const sortedGames = [...data].sort((a, b) => {
+        const dateA = new Date(`${a.date}T${a.time}`)
+        const dateB = new Date(`${b.date}T${b.time}`)
+        return dateA - dateB
+      })
+
+      setGames(sortedGames)
+      setLoading(false)
+    } catch (err) {
+      console.error('Failed to load games:', err)
+      setError('Failed to load games. Please try again.')
+      setGames([])
+      setLoading(false)
+    }
   }
 
   return (
@@ -95,7 +113,7 @@ export default function Scores() {
       <div className="scores-content">
         {/* Week Selector Bar */}
         <div className="week-bar">
-          <h2 className="week-bar-title">{getWeekName(week)}</h2>
+          <h1 className="week-bar-title">{getWeekName(week)}</h1>
           <div className="week-selector">
             <label htmlFor="week-select">Week:</label>
             <select
@@ -114,7 +132,12 @@ export default function Scores() {
         </div>
 
         {/* Games Grid */}
-        {loading ? (
+        {error ? (
+          <div className="no-games">
+            <div className="no-games-text">{error}</div>
+            <button className="quick-link-btn" onClick={() => handleWeekChange(week)}>Retry</button>
+          </div>
+        ) : loading ? (
           <div className="loading-container">
             <div className="loading-spinner"></div>
           </div>
