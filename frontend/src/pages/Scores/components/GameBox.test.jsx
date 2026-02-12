@@ -23,8 +23,9 @@ describe('GameBox', () => {
     it('renders team abbreviations', () => {
       renderWithRouter(<GameBox game={mockGame} />)
 
-      expect(screen.getByText('KC')).toBeInTheDocument()
-      expect(screen.getByText('SF')).toBeInTheDocument()
+      // TeamLogo fallback also renders abbreviation, so use getAllByText
+      expect(screen.getAllByText('KC').length).toBeGreaterThanOrEqual(1)
+      expect(screen.getAllByText('SF').length).toBeGreaterThanOrEqual(1)
     })
 
     it('renders team names', () => {
@@ -65,7 +66,7 @@ describe('GameBox', () => {
       const user = userEvent.setup()
       renderWithRouter(<GameBox game={mockGame} />)
 
-      const gameBox = screen.getByText('KC').closest('.gamebox')
+      const gameBox = document.querySelector('.gamebox')
       await user.click(gameBox)
 
       expect(mockNavigate).toHaveBeenCalledWith('/game/2025_01_SF_KC')

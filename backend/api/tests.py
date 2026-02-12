@@ -1,4 +1,4 @@
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.urls import reverse
 from rest_framework.test import APITestCase, APIClient
 from rest_framework import status
@@ -11,6 +11,14 @@ from games.models import Game
 from stats.models import FootballPlayerGameStat, FootballTeamGameStat
 
 
+@override_settings(REST_FRAMEWORK={
+    'DEFAULT_AUTHENTICATION_CLASSES': [],
+    'DEFAULT_PERMISSION_CLASSES': [],
+    'DEFAULT_THROTTLE_CLASSES': [],
+    'DEFAULT_THROTTLE_RATES': {},
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 50,
+})
 class BaseTestCase(APITestCase):
     """Base test case with common setup for all API tests"""
 
@@ -205,6 +213,12 @@ class BaseTestCase(APITestCase):
             def_interceptions=0
         )
 
+    def get_results(self, response):
+        """Extract results list from paginated or non-paginated response."""
+        if isinstance(response.data, dict) and 'results' in response.data:
+            return response.data['results']
+        return response.data
+
 
 class TeamAPITests(BaseTestCase):
     """Tests for Team API endpoints"""
@@ -213,7 +227,8 @@ class TeamAPITests(BaseTestCase):
         """Test listing all teams"""
         response = self.client.get('/api/teams/')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 3)
+        results = self.get_results(response)
+        self.assertEqual(len(results), 3)
 
     def test_get_team_detail(self):
         """Test getting a single team"""
@@ -235,27 +250,31 @@ class PlayerAPITests(BaseTestCase):
         """Test listing players (default: active only)"""
         response = self.client.get('/api/players/')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 4)
+        results = self.get_results(response)
+        self.assertEqual(len(results), 4)
 
     def test_filter_players_by_position(self):
         """Test filtering players by position"""
         response = self.client.get('/api/players/?position=QB')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 1)
-        self.assertEqual(response.data[0]['name'], 'Patrick Mahomes')
+        results = self.get_results(response)
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0]['name'], 'Patrick Mahomes')
 
     def test_filter_players_by_team(self):
         """Test filtering players by team"""
         response = self.client.get('/api/players/?team=KC')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 3)  # QB, RB, TE
+        results = self.get_results(response)
+        self.assertEqual(len(results), 3)  # QB, RB, TE
 
     def test_search_players_by_name(self):
         """Test searching players by name"""
         response = self.client.get('/api/players/?search=mahomes')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 1)
-        self.assertEqual(response.data[0]['name'], 'Patrick Mahomes')
+        results = self.get_results(response)
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0]['name'], 'Patrick Mahomes')
 
     def test_player_search_with_stats(self):
         """Test player search endpoint with stats"""
@@ -272,20 +291,23 @@ class GameAPITests(BaseTestCase):
         """Test listing all games"""
         response = self.client.get('/api/games/')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 2)
+        results = self.get_results(response)
+        self.assertEqual(len(results), 2)
 
     def test_filter_games_by_week(self):
         """Test filtering games by week"""
         response = self.client.get('/api/games/?week=1')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 1)
-        self.assertEqual(response.data[0]['week'], 1)
+        results = self.get_results(response)
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0]['week'], 1)
 
     def test_filter_games_by_season(self):
         """Test filtering games by season"""
         response = self.client.get('/api/games/?season=2025')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 2)
+        results = self.get_results(response)
+        self.assertEqual(len(results), 2)
 
     def test_get_game_detail(self):
         """Test getting a single game"""
@@ -412,6 +434,235 @@ class AnalyticsAPITests(BaseTestCase):
         self.assertIn('stats', response.data)
         self.assertEqual(response.data['player']['name'], 'Patrick Mahomes')
         self.assertIn('matchup', response.data)
+
+    # --- New analytics endpoint tests ---
+
+    def test_team_game_log_requires_team_id(self):
+        """Test team-game-log requires team_id parameter"""
+        response = self.client.get('/api/analytics/team-game-log/')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_team_game_log_success(self):
+        """Test team-game-log with valid team_id"""
+        response = self.client.get(f'/api/analytics/team-game-log/?team_id={self.team1.id}')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn('games', response.data)
+        self.assertIsInstance(response.data['games'], list)
+
+    def test_head_to_head_requires_params(self):
+        """Test head-to-head requires both team IDs"""
+        response = self.client.get('/api/analytics/head-to-head/')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_head_to_head_success(self):
+        """Test head-to-head with valid team IDs"""
+        response = self.client.get(
+            f'/api/analytics/head-to-head/?team1_id={self.team1.id}&team2_id={self.team2.id}'
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn('matchups', response.data)
+        self.assertIn('series_record', response.data)
+
+    def test_common_opponents_requires_params(self):
+        """Test common-opponents requires both team IDs"""
+        response = self.client.get('/api/analytics/common-opponents/')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_common_opponents_success(self):
+        """Test common-opponents with valid team IDs"""
+        response = self.client.get(
+            f'/api/analytics/common-opponents/?team1_id={self.team1.id}&team2_id={self.team2.id}&season=2025'
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn('common_opponents', response.data)
+
+    def test_usage_trends_requires_team_id(self):
+        """Test usage-trends requires team_id parameter"""
+        response = self.client.get('/api/analytics/usage-trends/')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_usage_trends_success(self):
+        """Test usage-trends with valid team_id"""
+        response = self.client.get(f'/api/analytics/usage-trends/?team_id={self.team1.id}')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn('per_game', response.data)
+
+    def test_player_trend_requires_player_id(self):
+        """Test player-trend requires player_id parameter"""
+        response = self.client.get('/api/analytics/player-trend/')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_player_trend_success(self):
+        """Test player-trend with valid player_id"""
+        response = self.client.get(f'/api/analytics/player-trend/?player_id={self.qb1.id}')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn('per_game', response.data)
+        self.assertIn('season_avg', response.data)
+
+    def test_best_team_success(self):
+        """Test best-team endpoint"""
+        response = self.client.get('/api/analytics/best-team/')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn('roster', response.data)
+        self.assertIn('projected_weekly_total', response.data)
+
+
+class DraftAPITests(BaseTestCase):
+    """Tests for Draft API endpoints"""
+
+    def test_create_draft_session(self):
+        """Test creating a new draft session"""
+        response = self.client.post('/api/draft/create/', {
+            'num_teams': 10,
+            'num_rounds': 15,
+            'user_team_position': 1,
+            'scoring_format': 'PPR',
+        }, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertIn('session_id', response.data)
+        self.assertEqual(response.data['status'], 'active')
+
+    def test_create_draft_invalid_position(self):
+        """Test creating draft with invalid user_team_position"""
+        response = self.client.post('/api/draft/create/', {
+            'num_teams': 10,
+            'user_team_position': 11,
+        }, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_draft_board(self):
+        """Test fetching the draft board"""
+        # Create session first
+        create_resp = self.client.post('/api/draft/create/', {
+            'num_teams': 10,
+            'user_team_position': 1,
+        }, format='json')
+        session_id = create_resp.data['session_id']
+
+        response = self.client.get(f'/api/draft/{session_id}/board/')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn('picks', response.data)
+        self.assertIn('num_teams', response.data)
+
+    def test_draft_available_players(self):
+        """Test fetching available players"""
+        create_resp = self.client.post('/api/draft/create/', {
+            'num_teams': 2,
+            'num_rounds': 1,
+            'user_team_position': 1,
+        }, format='json')
+        session_id = create_resp.data['session_id']
+
+        response = self.client.get(f'/api/draft/{session_id}/available/')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn('players', response.data)
+
+    def test_draft_make_pick(self):
+        """Test making a user pick"""
+        create_resp = self.client.post('/api/draft/create/', {
+            'num_teams': 2,
+            'num_rounds': 2,
+            'user_team_position': 1,
+        }, format='json')
+        session_id = create_resp.data['session_id']
+
+        # Get available players
+        avail_resp = self.client.get(f'/api/draft/{session_id}/available/')
+        players = avail_resp.data['players']
+        self.assertTrue(len(players) > 0)
+
+        # Make a pick
+        response = self.client.post(f'/api/draft/{session_id}/pick/', {
+            'player_id': players[0]['id'],
+        }, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn('status', response.data)
+
+    def test_draft_user_roster(self):
+        """Test fetching user roster"""
+        create_resp = self.client.post('/api/draft/create/', {
+            'num_teams': 2,
+            'num_rounds': 2,
+            'user_team_position': 1,
+        }, format='json')
+        session_id = create_resp.data['session_id']
+
+        # Make a pick
+        avail_resp = self.client.get(f'/api/draft/{session_id}/available/')
+        player_id = avail_resp.data['players'][0]['id']
+        self.client.post(f'/api/draft/{session_id}/pick/', {
+            'player_id': player_id,
+        }, format='json')
+
+        response = self.client.get(f'/api/draft/{session_id}/roster/')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn('roster', response.data)
+        self.assertIn('projected_weekly_total', response.data)
+        self.assertEqual(len(response.data['roster']), 1)
+
+    def test_draft_session_not_found(self):
+        """Test 404 for non-existent draft session"""
+        response = self.client.get('/api/draft/9999/board/')
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_draft_pick_already_drafted(self):
+        """Test picking an already-drafted player"""
+        create_resp = self.client.post('/api/draft/create/', {
+            'num_teams': 2,
+            'num_rounds': 2,
+            'user_team_position': 1,
+        }, format='json')
+        session_id = create_resp.data['session_id']
+
+        avail_resp = self.client.get(f'/api/draft/{session_id}/available/')
+        player_id = avail_resp.data['players'][0]['id']
+
+        # First pick succeeds
+        self.client.post(f'/api/draft/{session_id}/pick/', {
+            'player_id': player_id,
+        }, format='json')
+
+        # Second pick with same player should fail
+        response = self.client.post(f'/api/draft/{session_id}/pick/', {
+            'player_id': player_id,
+        }, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+
+class DraftModelTests(TestCase):
+    """Tests for Draft model methods"""
+
+    def test_snake_draft_order_odd_round(self):
+        """Test snake draft: odd rounds go 1->N"""
+        from draft.models import DraftSession
+        session = DraftSession(num_teams=4)
+        # Round 1: picks 1-4 -> teams 1,2,3,4
+        self.assertEqual(session.get_team_for_pick(1), 1)
+        self.assertEqual(session.get_team_for_pick(2), 2)
+        self.assertEqual(session.get_team_for_pick(3), 3)
+        self.assertEqual(session.get_team_for_pick(4), 4)
+
+    def test_snake_draft_order_even_round(self):
+        """Test snake draft: even rounds go N->1"""
+        from draft.models import DraftSession
+        session = DraftSession(num_teams=4)
+        # Round 2: picks 5-8 -> teams 4,3,2,1
+        self.assertEqual(session.get_team_for_pick(5), 4)
+        self.assertEqual(session.get_team_for_pick(6), 3)
+        self.assertEqual(session.get_team_for_pick(7), 2)
+        self.assertEqual(session.get_team_for_pick(8), 1)
+
+    def test_total_picks(self):
+        """Test total_picks property"""
+        from draft.models import DraftSession
+        session = DraftSession(num_teams=10, num_rounds=15)
+        self.assertEqual(session.total_picks, 150)
+
+    def test_draft_session_str(self):
+        """Test DraftSession string representation"""
+        from draft.models import DraftSession
+        session = DraftSession(id=1, status='active')
+        self.assertEqual(str(session), 'Draft #1 (active)')
 
 
 class ModelTests(TestCase):

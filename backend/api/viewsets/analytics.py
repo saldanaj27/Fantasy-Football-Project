@@ -987,7 +987,7 @@ class AnalyticsViewSet(SimulationMixin, viewsets.ViewSet):
             trend = 'stable'
 
         response_data = {
-            'player_id': int(player_id),
+            'player_id': player_id,
             'name': player.name,
             'per_game': per_game,
             'season_avg': season_avg,
