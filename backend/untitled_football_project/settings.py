@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'games',
     'stats',
     'predictions',
+    'draft',
     'rest_framework',
     "corsheaders",
     'django.contrib.admin',
@@ -208,7 +209,7 @@ REST_FRAMEWORK = {
         "rest_framework.throttling.AnonRateThrottle",
     ],
     "DEFAULT_THROTTLE_RATES": {
-        "anon": "200/hour",
+        "anon": "2000/hour",
     },
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
     "PAGE_SIZE": 50,
