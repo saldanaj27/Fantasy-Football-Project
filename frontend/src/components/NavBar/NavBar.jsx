@@ -14,6 +14,7 @@ export default function NavBar() {
     { to: '/players', label: 'Players' },
     { to: '/rankings', label: 'Rankings' },
     { to: '/start-sit', label: 'Start/Sit' },
+    { to: '/draft', label: 'Draft' },
   ]
 
   const isActive = (path) => {
