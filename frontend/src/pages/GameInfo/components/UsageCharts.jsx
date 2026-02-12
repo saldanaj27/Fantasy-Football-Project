@@ -5,6 +5,19 @@ import "../styles/UsageCharts.css"
 const COLORS = ['#3b82f6', '#ef4444', '#22c55e', '#f59e0b', '#8b5cf6', '#ec4899', '#14b8a6']
 const PASS_RUN_COLORS = ['#3b82f6', '#22c55e']
 
+function ChartTooltip({ active, payload }) {
+  if (active && payload && payload.length) {
+    const data = payload[0].payload
+    return (
+      <div className="chart-tooltip">
+        <p className="tooltip-name">{data.fullName || data.name}</p>
+        <p className="tooltip-value">{data.value.toFixed(1)}%</p>
+      </div>
+    )
+  }
+  return null
+}
+
 export default function UsageCharts({ usageMetrics }) {
   // Prepare pass/run split data
   const passRunData = [
@@ -31,19 +44,6 @@ export default function UsageCharts({ usageMetrics }) {
       position: player.position
     }))
 
-  const CustomTooltip = ({ active, payload }) => {
-    if (active && payload && payload.length) {
-      const data = payload[0].payload
-      return (
-        <div className="chart-tooltip">
-          <p className="tooltip-name">{data.fullName || data.name}</p>
-          <p className="tooltip-value">{data.value.toFixed(1)}%</p>
-        </div>
-      )
-    }
-    return null
-  }
-
   const renderCustomLabel = ({ name, value }) => `${name} ${value.toFixed(0)}%`
 
   return (
@@ -68,7 +68,7 @@ export default function UsageCharts({ usageMetrics }) {
                 <Cell key={`cell-${index}`} fill={PASS_RUN_COLORS[index]} />
               ))}
             </Pie>
-            <Tooltip content={<CustomTooltip />} />
+            <Tooltip content={<ChartTooltip />} />
           </PieChart>
         </ResponsiveContainer>
       </div>
@@ -91,7 +91,7 @@ export default function UsageCharts({ usageMetrics }) {
                 <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
               ))}
             </Pie>
-            <Tooltip content={<CustomTooltip />} />
+            <Tooltip content={<ChartTooltip />} />
             <Legend
               layout="horizontal"
               align="center"
@@ -122,7 +122,7 @@ export default function UsageCharts({ usageMetrics }) {
                 <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
               ))}
             </Pie>
-            <Tooltip content={<CustomTooltip />} />
+            <Tooltip content={<ChartTooltip />} />
             <Legend
               layout="horizontal"
               align="center"

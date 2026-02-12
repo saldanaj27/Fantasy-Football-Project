@@ -1,6 +1,6 @@
 import "../styles/PositionStatCard.css"
 
-export default function PositionStatCard({ position, stats, numGames }) {
+export default function PositionStatCard({ position, stats }) {
   // Helper function to get position display name
   const getPositionName = (pos) => {
     const names = {

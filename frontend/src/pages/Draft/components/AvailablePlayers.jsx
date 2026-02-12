@@ -26,6 +26,7 @@ export default function AvailablePlayers({ sessionId, onPick, disabled, refreshK
     } finally {
       setLoading(false)
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sessionId, position, debouncedSearch, refreshKey])
 
   useEffect(() => {

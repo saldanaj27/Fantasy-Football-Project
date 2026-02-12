@@ -3,6 +3,7 @@ import { setSimulationParams } from '../api/client'
 
 const SimulationContext = createContext()
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useSimulation() {
   const context = useContext(SimulationContext)
   if (!context) {

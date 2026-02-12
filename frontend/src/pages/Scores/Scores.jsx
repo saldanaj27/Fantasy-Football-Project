@@ -81,6 +81,7 @@ export default function Scores() {
     }
 
     initializeWeek()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   // Handle manual week selection changes

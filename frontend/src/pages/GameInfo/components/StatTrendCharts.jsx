@@ -3,6 +3,22 @@ import '../styles/StatTrendCharts.css'
 
 const COLORS = ['#3b82f6', '#ef4444', '#22c55e', '#f59e0b', '#8b5cf6', '#ec4899', '#14b8a6']
 
+function TrendTooltip({ active, payload, label }) {
+  if (active && payload && payload.length) {
+    return (
+      <div className="trend-tooltip">
+        <p className="trend-tooltip-label">{label}</p>
+        {payload.map((entry, i) => (
+          <p key={i} className="trend-tooltip-value" style={{ color: entry.color }}>
+            {entry.name}: {entry.value}
+          </p>
+        ))}
+      </div>
+    )
+  }
+  return null
+}
+
 export default function StatTrendCharts({ games }) {
   if (!games || games.length === 0) return null
 
@@ -14,22 +30,6 @@ export default function StatTrendCharts({ games }) {
     rushYards: g.rush_yards,
   }))
 
-  const CustomTooltip = ({ active, payload, label }) => {
-    if (active && payload && payload.length) {
-      return (
-        <div className="trend-tooltip">
-          <p className="trend-tooltip-label">{label}</p>
-          {payload.map((entry, i) => (
-            <p key={i} className="trend-tooltip-value" style={{ color: entry.color }}>
-              {entry.name}: {entry.value}
-            </p>
-          ))}
-        </div>
-      )
-    }
-    return null
-  }
-
   return (
     <div className="stat-trend-charts">
       <div className="trend-chart-card">
@@ -39,7 +39,7 @@ export default function StatTrendCharts({ games }) {
             <CartesianGrid strokeDasharray="3 3" stroke="var(--border-light)" />
             <XAxis dataKey="week" tick={{ fontSize: 11 }} stroke="var(--text-tertiary)" />
             <YAxis tick={{ fontSize: 11 }} stroke="var(--text-tertiary)" />
-            <Tooltip content={<CustomTooltip />} />
+            <Tooltip content={<TrendTooltip />} />
             <Area type="monotone" dataKey="points" name="Points" stroke={COLORS[0]} fill={COLORS[0]} fillOpacity={0.2} />
           </AreaChart>
         </ResponsiveContainer>
@@ -52,7 +52,7 @@ export default function StatTrendCharts({ games }) {
             <CartesianGrid strokeDasharray="3 3" stroke="var(--border-light)" />
             <XAxis dataKey="week" tick={{ fontSize: 11 }} stroke="var(--text-tertiary)" />
             <YAxis tick={{ fontSize: 11 }} stroke="var(--text-tertiary)" />
-            <Tooltip content={<CustomTooltip />} />
+            <Tooltip content={<TrendTooltip />} />
             <Legend wrapperStyle={{ fontSize: 11 }} />
             <Area type="monotone" dataKey="passYards" name="Pass Yds" stackId="1" stroke={COLORS[0]} fill={COLORS[0]} fillOpacity={0.3} />
             <Area type="monotone" dataKey="rushYards" name="Rush Yds" stackId="1" stroke={COLORS[2]} fill={COLORS[2]} fillOpacity={0.3} />

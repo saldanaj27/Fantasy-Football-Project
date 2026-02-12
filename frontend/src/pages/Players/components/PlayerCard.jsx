@@ -26,7 +26,7 @@ export default function PlayerCard({ player }) {
       try {
         const data = await getPlayerTrend(player.id, 5)
         setTrendData(data)
-      } catch (error) {
+      } catch {
         // silently fail - sparkline is optional
       }
     }

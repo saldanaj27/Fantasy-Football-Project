@@ -19,7 +19,7 @@ export default function StartSit() {
   const [player2Data, setPlayer2Data] = useState(null)
   const [loading2, setLoading2] = useState(false)
 
-  const [numGames, setNumGames] = useState(3)
+  const [numGames] = useState(3)
 
   // Debounced search for player 1
   useEffect(() => {
@@ -124,7 +124,7 @@ export default function StartSit() {
   const recommendation = getRecommendation()
 
   // Render player comparison card
-  const renderComparisonCard = (playerData, isRecommended, playerNum) => {
+  const renderComparisonCard = (playerData, isRecommended) => {
     if (!playerData) return null
 
     const { player, stats, matchup, opponent_defense } = playerData
