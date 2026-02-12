@@ -63,7 +63,7 @@ class PredictionModelVersion(models.Model):
     is_active = models.BooleanField(default=False)
 
     class Meta:
-        ordering = ['-created_at']
+        ordering = ["-created_at"]
 
     def __str__(self):
         status = " (active)" if self.is_active else ""

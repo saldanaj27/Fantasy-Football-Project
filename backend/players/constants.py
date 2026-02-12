@@ -37,10 +37,10 @@ POSITION_CHOICES = [
 ]
 
 OFFENSIVE_POS = [
-    'QB',
-    'RB',
-    'WR',
-    'TE',
+    "QB",
+    "RB",
+    "WR",
+    "TE",
 ]
 
 STATUS = [

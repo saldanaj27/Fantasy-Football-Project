@@ -10,9 +10,9 @@ GET /api/predictions/week/?season=X&week=Y - Get predictions for all games in a 
 GET /api/predictions/model-info/         - Get info about the active model
 """
 
-from rest_framework.views import APIView
-from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from .services import PredictionService
 
@@ -31,13 +31,13 @@ class GamePredictionView(APIView):
     """
 
     def get(self, request):
-        game_id = request.query_params.get('game_id')
-        simulate = bool(request.query_params.get('simulate_season'))
+        game_id = request.query_params.get("game_id")
+        simulate = bool(request.query_params.get("simulate_season"))
 
         if not game_id:
             return Response(
-                {'error': 'game_id query parameter is required'},
-                status=status.HTTP_400_BAD_REQUEST
+                {"error": "game_id query parameter is required"},
+                status=status.HTTP_400_BAD_REQUEST,
             )
 
         try:
@@ -45,14 +45,11 @@ class GamePredictionView(APIView):
             prediction = service.predict_game(game_id, simulate=simulate)
             return Response(prediction)
         except ValueError as e:
-            return Response(
-                {'error': str(e)},
-                status=status.HTTP_400_BAD_REQUEST
-            )
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
             return Response(
-                {'error': f'Prediction failed: {str(e)}'},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+                {"error": f"Prediction failed: {str(e)}"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
 
 
@@ -71,13 +68,13 @@ class WeekPredictionsView(APIView):
     """
 
     def get(self, request):
-        season = request.query_params.get('season')
-        week = request.query_params.get('week')
+        season = request.query_params.get("season")
+        week = request.query_params.get("week")
 
         if not season or not week:
             return Response(
-                {'error': 'season and week query parameters are required'},
-                status=status.HTTP_400_BAD_REQUEST
+                {"error": "season and week query parameters are required"},
+                status=status.HTTP_400_BAD_REQUEST,
             )
 
         try:
@@ -85,24 +82,26 @@ class WeekPredictionsView(APIView):
             week = int(week)
         except ValueError:
             return Response(
-                {'error': 'season and week must be integers'},
-                status=status.HTTP_400_BAD_REQUEST
+                {"error": "season and week must be integers"},
+                status=status.HTTP_400_BAD_REQUEST,
             )
 
         try:
-            simulate = bool(request.query_params.get('simulate_season'))
+            simulate = bool(request.query_params.get("simulate_season"))
             service = PredictionService.get_instance()
             predictions = service.predict_week(season, week, simulate=simulate)
-            return Response({
-                'season': season,
-                'week': week,
-                'predictions': predictions,
-                'count': len(predictions),
-            })
+            return Response(
+                {
+                    "season": season,
+                    "week": week,
+                    "predictions": predictions,
+                    "count": len(predictions),
+                }
+            )
         except Exception as e:
             return Response(
-                {'error': f'Prediction failed: {str(e)}'},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+                {"error": f"Prediction failed: {str(e)}"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
 
 
@@ -121,6 +120,6 @@ class ModelInfoView(APIView):
             return Response(info)
         except Exception as e:
             return Response(
-                {'error': f'Failed to get model info: {str(e)}'},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+                {"error": f"Failed to get model info: {str(e)}"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )

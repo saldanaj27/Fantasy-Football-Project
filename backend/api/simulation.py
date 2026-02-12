@@ -26,8 +26,8 @@ class SimulationMixin:
     """Mixin for DRF views that need simulation awareness."""
 
     def get_simulation_context(self, request) -> SimulationContext:
-        season = request.query_params.get('simulate_season')
-        week = request.query_params.get('simulate_week')
+        season = request.query_params.get("simulate_season")
+        week = request.query_params.get("simulate_week")
 
         if not season or not week:
             return SimulationContext(is_active=False)
@@ -40,10 +40,9 @@ class SimulationMixin:
 
         # Compute cutoff date from the first game of the simulated week
         first_game = (
-            Game.objects
-            .filter(season=season, week=week)
-            .order_by('date')
-            .values_list('date', flat=True)
+            Game.objects.filter(season=season, week=week)
+            .order_by("date")
+            .values_list("date", flat=True)
             .first()
         )
 
@@ -70,10 +69,10 @@ class SimulationMixin:
         if not SimulationMixin.is_game_in_future(game, sim):
             return game_data
 
-        game_data['_actual_home_score'] = game_data.get('home_score')
-        game_data['_actual_away_score'] = game_data.get('away_score')
-        game_data['_simulation_masked'] = True
-        game_data['home_score'] = None
-        game_data['away_score'] = None
-        game_data['total_score'] = None
+        game_data["_actual_home_score"] = game_data.get("home_score")
+        game_data["_actual_away_score"] = game_data.get("away_score")
+        game_data["_simulation_masked"] = True
+        game_data["home_score"] = None
+        game_data["away_score"] = None
+        game_data["total_score"] = None
         return game_data

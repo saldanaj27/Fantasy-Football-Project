@@ -20,10 +20,11 @@ from django.core.cache import cache
 
 logger = logging.getLogger(__name__)
 
-from games.models import Game
-from .models import PredictionModelVersion
-from .features import FeatureExtractor, InsufficientDataError
-from .ml_models import GamePredictionModel
+from games.models import Game  # noqa: E402
+
+from .features import FeatureExtractor, InsufficientDataError  # noqa: E402
+from .ml_models import GamePredictionModel  # noqa: E402
+from .models import PredictionModelVersion  # noqa: E402
 
 
 class PredictionService:
@@ -40,7 +41,7 @@ class PredictionService:
     _model_version = None
 
     @classmethod
-    def get_instance(cls) -> 'PredictionService':
+    def get_instance(cls) -> "PredictionService":
         """
         Get the singleton instance of PredictionService.
         Creates one if it doesn't exist.
@@ -113,17 +114,21 @@ class PredictionService:
 
         # Load model if needed
         if not self._load_model():
-            raise ValueError("No trained model available. Run 'python manage.py train_model --activate' first.")
+            raise ValueError(
+                "No trained model available. Run 'python manage.py train_model --activate' first."
+            )
 
         # Get the game (Game model uses 'id' as primary key)
         try:
-            game = Game.objects.select_related('home_team', 'away_team').get(id=game_id)
+            game = Game.objects.select_related("home_team", "away_team").get(id=game_id)
         except Game.DoesNotExist:
             raise ValueError(f"Game not found: {game_id}")
 
         # Check if game is already completed (skip in simulation mode)
         if not simulate and game.home_score is not None:
-            raise ValueError(f"Game {game_id} is already completed. Predictions are only for upcoming games.")
+            raise ValueError(
+                f"Game {game_id} is already completed. Predictions are only for upcoming games."
+            )
 
         # Extract features
         try:
@@ -136,34 +141,38 @@ class PredictionService:
 
         # Format response
         result = {
-            'game_id': game_id,
-            'home_team': game.home_team.abbreviation if game.home_team else 'UNK',
-            'away_team': game.away_team.abbreviation if game.away_team else 'UNK',
-            'game_date': game.date.isoformat() if game.date else None,
-            'prediction': prediction,
-            'model_version': self._model_version,
+            "game_id": game_id,
+            "home_team": game.home_team.abbreviation if game.home_team else "UNK",
+            "away_team": game.away_team.abbreviation if game.away_team else "UNK",
+            "game_date": game.date.isoformat() if game.date else None,
+            "prediction": prediction,
+            "model_version": self._model_version,
         }
 
         # Include actual results when simulating a completed game
         if simulate and game.home_score is not None:
             home_score = game.home_score
             away_score = game.away_score
-            result['actual'] = {
-                'home_score': home_score,
-                'away_score': away_score,
+            result["actual"] = {
+                "home_score": home_score,
+                "away_score": away_score,
                 # Use "home"/"away" to match predicted_winner format from ml_models.py
-                'winner': 'home' if home_score > away_score
-                    else 'away' if away_score > home_score
-                    else 'TIE',
+                "winner": (
+                    "home"
+                    if home_score > away_score
+                    else "away" if away_score > home_score else "TIE"
+                ),
             }
 
         # Cache for 15 minutes
-        cache_ttl = settings.CACHE_TTL.get('predictions', 900)
+        cache_ttl = settings.CACHE_TTL.get("predictions", 900)
         cache.set(cache_key, result, cache_ttl)
 
         return result
 
-    def predict_week(self, season: int, week: int, simulate: bool = False) -> list[dict]:
+    def predict_week(
+        self, season: int, week: int, simulate: bool = False
+    ) -> list[dict]:
         """
         Make predictions for all games in a week.
 
@@ -182,9 +191,9 @@ class PredictionService:
             return cached
 
         # Get games for this week
-        games = (Game.objects
-                 .filter(season=season, week=week)
-                 .select_related('home_team', 'away_team'))
+        games = Game.objects.filter(season=season, week=week).select_related(
+            "home_team", "away_team"
+        )
 
         if not simulate:
             games = games.filter(home_score__isnull=True)  # Only upcoming games
@@ -196,15 +205,21 @@ class PredictionService:
                 predictions.append(pred)
             except ValueError as e:
                 # Skip games we can't predict
-                predictions.append({
-                    'game_id': game.id,
-                    'home_team': game.home_team.abbreviation if game.home_team else 'UNK',
-                    'away_team': game.away_team.abbreviation if game.away_team else 'UNK',
-                    'error': str(e),
-                })
+                predictions.append(
+                    {
+                        "game_id": game.id,
+                        "home_team": (
+                            game.home_team.abbreviation if game.home_team else "UNK"
+                        ),
+                        "away_team": (
+                            game.away_team.abbreviation if game.away_team else "UNK"
+                        ),
+                        "error": str(e),
+                    }
+                )
 
         # Cache for 15 minutes
-        cache_ttl = settings.CACHE_TTL.get('predictions', 900)
+        cache_ttl = settings.CACHE_TTL.get("predictions", 900)
         cache.set(cache_key, predictions, cache_ttl)
 
         return predictions
@@ -220,21 +235,21 @@ class PredictionService:
 
         if not version:
             return {
-                'status': 'no_model',
-                'message': 'No trained model is active. Run train_model command first.'
+                "status": "no_model",
+                "message": "No trained model is active. Run train_model command first.",
             }
 
         return {
-            'status': 'ready',
-            'version': version.version,
-            'created_at': version.created_at.isoformat(),
-            'training_seasons': version.training_seasons,
-            'training_samples': version.training_samples,
-            'metrics': {
-                'winner_accuracy': version.winner_accuracy,
-                'spread_mae': version.spread_mae,
-                'total_mae': version.total_mae,
-            }
+            "status": "ready",
+            "version": version.version,
+            "created_at": version.created_at.isoformat(),
+            "training_seasons": version.training_seasons,
+            "training_samples": version.training_samples,
+            "metrics": {
+                "winner_accuracy": version.winner_accuracy,
+                "spread_mae": version.spread_mae,
+                "total_mae": version.total_mae,
+            },
         }
 
     @classmethod
@@ -242,8 +257,8 @@ class PredictionService:
         """Clear prediction cache (call after model retrain)."""
         # Clear all prediction-related cache keys
         # Note: This is a simple approach; for production, use cache versioning
-        cache.delete_pattern('prediction:*')
-        cache.delete_pattern('predictions:week:*')
+        cache.delete_pattern("prediction:*")
+        cache.delete_pattern("predictions:week:*")
 
     @classmethod
     def reload_model(cls):

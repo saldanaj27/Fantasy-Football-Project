@@ -1,15 +1,15 @@
-from django.db.models import Avg, Count, Q
-from stats.models import FootballPlayerGameStat
-from players.models import Player
-from .models import DraftSession, DraftPick
+from django.db.models import Avg, Count
 
+from players.models import Player
+
+from .models import DraftPick
 
 # Position limits for AI teams
 POSITION_LIMITS = {
-    'QB': 2,
-    'RB': 5,
-    'WR': 5,
-    'TE': 2,
+    "QB": 2,
+    "RB": 5,
+    "WR": 5,
+    "TE": 2,
 }
 
 
@@ -19,25 +19,29 @@ class DraftAI:
     @staticmethod
     def get_available_players(session):
         """Return players not yet drafted, sorted by avg fantasy points."""
-        drafted_ids = session.picks.values_list('player_id', flat=True)
+        drafted_ids = session.picks.values_list("player_id", flat=True)
         players = Player.objects.filter(
-            status='ACT',
-            position__in=['QB', 'RB', 'WR', 'TE'],
+            status="ACT",
+            position__in=["QB", "RB", "WR", "TE"],
         ).exclude(id__in=drafted_ids)
 
         # Annotate with avg fantasy points
         # Note: related_name on FootballPlayerGameStat.player is 'player_id'
-        players = players.annotate(
-            avg_fpts=Avg('player_id__fantasy_points_ppr'),
-            games_played=Count('player_id'),
-        ).filter(games_played__gte=1).order_by('-avg_fpts')
+        players = (
+            players.annotate(
+                avg_fpts=Avg("player_id__fantasy_points_ppr"),
+                games_played=Count("player_id"),
+            )
+            .filter(games_played__gte=1)
+            .order_by("-avg_fpts")
+        )
 
         return players
 
     @staticmethod
     def get_team_roster(session, team_number):
         """Get position counts for a given team."""
-        picks = session.picks.filter(team_number=team_number).select_related('player')
+        picks = session.picks.filter(team_number=team_number).select_related("player")
         counts = {}
         for pick in picks:
             pos = pick.player.position
@@ -93,7 +97,7 @@ class DraftAI:
 
         # Check if draft is complete
         if session.current_pick > session.total_picks:
-            session.status = 'completed'
+            session.status = "completed"
 
         session.save()
         return picks_made

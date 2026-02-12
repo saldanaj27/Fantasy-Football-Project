@@ -25,10 +25,10 @@ We exclude these to avoid garbage-in-garbage-out.
 """
 
 import numpy as np
-from datetime import date
 from tqdm import tqdm
 
 from games.models import Game
+
 from .features import FeatureExtractor, InsufficientDataError
 
 
@@ -50,7 +50,9 @@ class TrainingDataBuilder:
         self.seasons = seasons
         self.feature_extractor = FeatureExtractor(num_games=num_games_for_features)
 
-    def build(self, min_week: int = 4) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+    def build(
+        self, min_week: int = 4
+    ) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
         """
         Build training data from completed historical games.
 
@@ -66,16 +68,17 @@ class TrainingDataBuilder:
             - y_total: home_score + away_score
         """
         # Get all completed games from specified seasons
-        games = (Game.objects
-                 .filter(season__in=self.seasons)
-                 .filter(week__gte=min_week)  # Skip early weeks
-                 .filter(home_score__isnull=False)  # Only completed games
-                 .filter(stage='REG')  # Regular season only (playoffs might be different)
-                 .select_related('home_team', 'away_team')
-                 .order_by('date'))
+        games = (
+            Game.objects.filter(season__in=self.seasons)
+            .filter(week__gte=min_week)  # Skip early weeks
+            .filter(home_score__isnull=False)  # Only completed games
+            .filter(stage="REG")  # Regular season only (playoffs might be different)
+            .select_related("home_team", "away_team")
+            .order_by("date")
+        )
 
         print(f"Found {games.count()} games from seasons {self.seasons}")
-        print(f"Extracting features (this may take a moment)...")
+        print("Extracting features (this may take a moment)...")
 
         X_list = []
         y_winner_list = []
@@ -116,7 +119,7 @@ class TrainingDataBuilder:
         y_total = np.array(y_total_list, dtype=np.float32)
 
         # Print some statistics about the data
-        print(f"\n=== Dataset Statistics ===")
+        print("\n=== Dataset Statistics ===")
         print(f"Total games: {len(X)}")
         print(f"Feature dimensions: {X.shape[1]}")
         print(f"Home win rate: {y_winner.mean():.1%}")
@@ -127,8 +130,7 @@ class TrainingDataBuilder:
 
 
 def train_test_split_by_season(
-    games_seasons: list[int],
-    test_season: int
+    games_seasons: list[int], test_season: int
 ) -> tuple[list[int], list[int]]:
     """
     Split data by season for time-based validation.

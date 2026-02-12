@@ -40,13 +40,14 @@ This ensures the same preprocessing is applied during training AND prediction.
 """
 
 import os
+
 import joblib
 import numpy as np
-from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import StandardScaler
-from sklearn.ensemble import RandomForestClassifier, GradientBoostingRegressor
+from sklearn.ensemble import GradientBoostingRegressor, RandomForestClassifier
 from sklearn.linear_model import Ridge
 from sklearn.model_selection import cross_val_score
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler
 
 
 class GamePredictionModel:
@@ -73,47 +74,64 @@ class GamePredictionModel:
         # n_estimators: number of trees (more = better but slower)
         # max_depth: how deep each tree can grow (prevents overfitting)
         # random_state: for reproducibility
-        self.winner_model = Pipeline([
-            ('scaler', StandardScaler()),
-            ('classifier', RandomForestClassifier(
-                n_estimators=100,      # Build 100 decision trees
-                max_depth=10,          # Limit tree depth to prevent overfitting
-                min_samples_split=5,   # Need at least 5 samples to split a node
-                random_state=42,       # For reproducible results
-                n_jobs=-1              # Use all CPU cores
-            ))
-        ])
+        self.winner_model = Pipeline(
+            [
+                ("scaler", StandardScaler()),
+                (
+                    "classifier",
+                    RandomForestClassifier(
+                        n_estimators=100,  # Build 100 decision trees
+                        max_depth=10,  # Limit tree depth to prevent overfitting
+                        min_samples_split=5,  # Need at least 5 samples to split a node
+                        random_state=42,  # For reproducible results
+                        n_jobs=-1,  # Use all CPU cores
+                    ),
+                ),
+            ]
+        )
 
         # Spread Prediction (Regression)
         # GradientBoosting builds trees sequentially, each correcting previous errors
         # learning_rate: how much each tree contributes (lower = more trees needed but often better)
-        self.spread_model = Pipeline([
-            ('scaler', StandardScaler()),
-            ('regressor', GradientBoostingRegressor(
-                n_estimators=100,      # Build 100 boosting stages
-                learning_rate=0.1,     # Shrinkage factor
-                max_depth=5,           # Shallow trees work better for boosting
-                min_samples_split=5,
-                random_state=42
-            ))
-        ])
+        self.spread_model = Pipeline(
+            [
+                ("scaler", StandardScaler()),
+                (
+                    "regressor",
+                    GradientBoostingRegressor(
+                        n_estimators=100,  # Build 100 boosting stages
+                        learning_rate=0.1,  # Shrinkage factor
+                        max_depth=5,  # Shallow trees work better for boosting
+                        min_samples_split=5,
+                        random_state=42,
+                    ),
+                ),
+            ]
+        )
 
         # Total Points Prediction (Regression)
         # Ridge regression is linear regression with L2 regularization
         # alpha: regularization strength (higher = simpler model)
         # Ridge is simpler because total points are more predictable than spread
-        self.total_model = Pipeline([
-            ('scaler', StandardScaler()),
-            ('regressor', Ridge(
-                alpha=1.0,             # Regularization strength
-                random_state=42
-            ))
-        ])
+        self.total_model = Pipeline(
+            [
+                ("scaler", StandardScaler()),
+                (
+                    "regressor",
+                    Ridge(alpha=1.0, random_state=42),  # Regularization strength
+                ),
+            ]
+        )
 
         self.is_trained = False
 
-    def train(self, X: np.ndarray, y_winner: np.ndarray,
-              y_spread: np.ndarray, y_total: np.ndarray) -> dict:
+    def train(
+        self,
+        X: np.ndarray,
+        y_winner: np.ndarray,
+        y_spread: np.ndarray,
+        y_total: np.ndarray,
+    ) -> dict:
         """
         Train all three models on the provided data.
 
@@ -145,7 +163,7 @@ class GamePredictionModel:
         print("Training winner prediction model (RandomForest)...")
         self.winner_model.fit(X, y_winner)
         winner_cv_scores = cross_val_score(
-            self.winner_model, X, y_winner, cv=5, scoring='accuracy'
+            self.winner_model, X, y_winner, cv=5, scoring="accuracy"
         )
 
         # Train spread prediction model
@@ -153,31 +171,37 @@ class GamePredictionModel:
         self.spread_model.fit(X, y_spread)
         # neg_mean_absolute_error because sklearn maximizes scores
         spread_cv_scores = -cross_val_score(
-            self.spread_model, X, y_spread, cv=5, scoring='neg_mean_absolute_error'
+            self.spread_model, X, y_spread, cv=5, scoring="neg_mean_absolute_error"
         )
 
         # Train total points prediction model
         print("Training total points prediction model (Ridge)...")
         self.total_model.fit(X, y_total)
         total_cv_scores = -cross_val_score(
-            self.total_model, X, y_total, cv=5, scoring='neg_mean_absolute_error'
+            self.total_model, X, y_total, cv=5, scoring="neg_mean_absolute_error"
         )
 
         self.is_trained = True
 
         metrics = {
-            'winner_accuracy': float(np.mean(winner_cv_scores)),
-            'winner_accuracy_std': float(np.std(winner_cv_scores)),
-            'spread_mae': float(np.mean(spread_cv_scores)),
-            'spread_mae_std': float(np.std(spread_cv_scores)),
-            'total_mae': float(np.mean(total_cv_scores)),
-            'total_mae_std': float(np.std(total_cv_scores)),
+            "winner_accuracy": float(np.mean(winner_cv_scores)),
+            "winner_accuracy_std": float(np.std(winner_cv_scores)),
+            "spread_mae": float(np.mean(spread_cv_scores)),
+            "spread_mae_std": float(np.std(spread_cv_scores)),
+            "total_mae": float(np.mean(total_cv_scores)),
+            "total_mae_std": float(np.std(total_cv_scores)),
         }
 
         print("\n=== Training Complete ===")
-        print(f"Winner Accuracy: {metrics['winner_accuracy']:.1%} (+/- {metrics['winner_accuracy_std']:.1%})")
-        print(f"Spread MAE: {metrics['spread_mae']:.2f} points (+/- {metrics['spread_mae_std']:.2f})")
-        print(f"Total MAE: {metrics['total_mae']:.2f} points (+/- {metrics['total_mae_std']:.2f})")
+        print(
+            f"Winner Accuracy: {metrics['winner_accuracy']:.1%} (+/- {metrics['winner_accuracy_std']:.1%})"
+        )
+        print(
+            f"Spread MAE: {metrics['spread_mae']:.2f} points (+/- {metrics['spread_mae_std']:.2f})"
+        )
+        print(
+            f"Total MAE: {metrics['total_mae']:.2f} points (+/- {metrics['total_mae_std']:.2f})"
+        )
 
         return metrics
 
@@ -225,21 +249,23 @@ class GamePredictionModel:
             # High confidence = probability far from 50%
             prob = win_proba[i]
             if prob > 0.65 or prob < 0.35:
-                confidence = 'high'
+                confidence = "high"
             elif prob > 0.55 or prob < 0.45:
-                confidence = 'medium'
+                confidence = "medium"
             else:
-                confidence = 'low'
+                confidence = "low"
 
-            predictions.append({
-                'home_win_probability': float(prob),
-                'predicted_winner': 'home' if prob > 0.5 else 'away',
-                'predicted_spread': float(spread[i]),
-                'predicted_total': float(total[i]),
-                'predicted_home_score': float(round(home_score, 1)),
-                'predicted_away_score': float(round(away_score, 1)),
-                'confidence': confidence,
-            })
+            predictions.append(
+                {
+                    "home_win_probability": float(prob),
+                    "predicted_winner": "home" if prob > 0.5 else "away",
+                    "predicted_spread": float(spread[i]),
+                    "predicted_total": float(total[i]),
+                    "predicted_home_score": float(round(home_score, 1)),
+                    "predicted_away_score": float(round(away_score, 1)),
+                    "confidence": confidence,
+                }
+            )
 
         # Return single dict if single prediction, else list
         return predictions[0] if len(predictions) == 1 else predictions
@@ -261,9 +287,9 @@ class GamePredictionModel:
 
         os.makedirs(model_dir, exist_ok=True)
 
-        winner_path = os.path.join(model_dir, f'winner_{version}.joblib')
-        spread_path = os.path.join(model_dir, f'spread_{version}.joblib')
-        total_path = os.path.join(model_dir, f'total_{version}.joblib')
+        winner_path = os.path.join(model_dir, f"winner_{version}.joblib")
+        spread_path = os.path.join(model_dir, f"spread_{version}.joblib")
+        total_path = os.path.join(model_dir, f"total_{version}.joblib")
 
         joblib.dump(self.winner_model, winner_path)
         joblib.dump(self.spread_model, spread_path)
@@ -272,13 +298,15 @@ class GamePredictionModel:
         print(f"Models saved to {model_dir}")
 
         return {
-            'winner_model_path': winner_path,
-            'spread_model_path': spread_path,
-            'total_model_path': total_path,
+            "winner_model_path": winner_path,
+            "spread_model_path": spread_path,
+            "total_model_path": total_path,
         }
 
     @classmethod
-    def load(cls, winner_path: str, spread_path: str, total_path: str) -> 'GamePredictionModel':
+    def load(
+        cls, winner_path: str, spread_path: str, total_path: str
+    ) -> "GamePredictionModel":
         """
         Load a trained model from disk.
 
@@ -323,11 +351,13 @@ def get_feature_importance(model: GamePredictionModel, feature_names: list) -> d
 
     # RandomForest has built-in feature_importances_
     # (based on how much each feature reduces impurity across all trees)
-    rf_classifier = model.winner_model.named_steps['classifier']
+    rf_classifier = model.winner_model.named_steps["classifier"]
     importances = rf_classifier.feature_importances_
 
     # Sort by importance
     importance_dict = dict(zip(feature_names, importances))
-    sorted_importance = dict(sorted(importance_dict.items(), key=lambda x: x[1], reverse=True))
+    sorted_importance = dict(
+        sorted(importance_dict.items(), key=lambda x: x[1], reverse=True)
+    )
 
     return sorted_importance

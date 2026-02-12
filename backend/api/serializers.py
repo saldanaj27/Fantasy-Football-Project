@@ -1,8 +1,10 @@
-from rest_framework import serializers
 from django.db.models import Q
-from teams.models import Team
-from players.models import Player
+from rest_framework import serializers
+
 from games.models import Game
+from players.models import Player
+from teams.models import Team
+
 
 class TeamSerializer(serializers.ModelSerializer):
     class Meta:
@@ -15,13 +17,13 @@ class TeamWithRecordSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Team
-        fields = ['id', 'name', 'abbreviation', 'city', 'logo_url', 'record']
+        fields = ["id", "name", "abbreviation", "city", "logo_url", "record"]
 
     def get_record(self, obj):
         # Get the current season from context or default to latest
-        season = self.context.get('season')
+        season = self.context.get("season")
         if not season:
-            latest_game = Game.objects.order_by('-season').first()
+            latest_game = Game.objects.order_by("-season").first()
             season = latest_game.season if latest_game else 2024
 
         # Get all completed games for this team in the season
@@ -29,11 +31,11 @@ class TeamWithRecordSerializer(serializers.ModelSerializer):
             Q(home_team=obj) | Q(away_team=obj),
             season=season,
             home_score__isnull=False,
-            away_score__isnull=False
+            away_score__isnull=False,
         )
 
         # In simulation mode, only count games before the simulated week
-        simulation_week = self.context.get('simulation_week')
+        simulation_week = self.context.get("simulation_week")
         if simulation_week is not None:
             completed_games = completed_games.filter(week__lt=simulation_week)
 
@@ -63,6 +65,7 @@ class TeamWithRecordSerializer(serializers.ModelSerializer):
             return f"{wins}-{losses}-{ties}"
         return f"{wins}-{losses}"
 
+
 class PlayerSerializer(serializers.ModelSerializer):
     team = TeamSerializer(read_only=True)
 
@@ -70,13 +73,16 @@ class PlayerSerializer(serializers.ModelSerializer):
         model = Player
         fields = "__all__"
 
+
 class PlayerBasicSerializer(serializers.ModelSerializer):
     """Lightweight serializer without nested team for list views"""
-    team_abbr = serializers.CharField(source='team.abbreviation', read_only=True)
+
+    team_abbr = serializers.CharField(source="team.abbreviation", read_only=True)
 
     class Meta:
         model = Player
-        fields = ['id', 'name', 'position', 'team_abbr', 'image_url', 'status']
+        fields = ["id", "name", "position", "team_abbr", "image_url", "status"]
+
 
 class GameSerializer(serializers.ModelSerializer):
     # change fields from ID to actual objects with records
@@ -89,11 +95,11 @@ class GameSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         # Pass season context to nested team serializers
-        self.fields['home_team'].context['season'] = instance.season
-        self.fields['away_team'].context['season'] = instance.season
+        self.fields["home_team"].context["season"] = instance.season
+        self.fields["away_team"].context["season"] = instance.season
         # Pass simulation context to nested team serializers
-        simulation_week = self.context.get('simulation_week')
+        simulation_week = self.context.get("simulation_week")
         if simulation_week is not None:
-            self.fields['home_team'].context['simulation_week'] = simulation_week
-            self.fields['away_team'].context['simulation_week'] = simulation_week
+            self.fields["home_team"].context["simulation_week"] = simulation_week
+            self.fields["away_team"].context["simulation_week"] = simulation_week
         return super().to_representation(instance)
