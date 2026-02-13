@@ -9,34 +9,56 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('players', '0001_initial'),
-        ('games', '0001_initial'),
+        ("players", "0001_initial"),
+        ("games", "0001_initial"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='FootballPlayerGameStat',
+            name="FootballPlayerGameStat",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('rush_attempts', models.PositiveIntegerField(default=0)),
-                ('rush_yards', models.IntegerField(default=0)),
-                ('rushing_touchdowns', models.PositiveIntegerField(default=0)),
-                ('fumbles', models.PositiveIntegerField(default=0)),
-                ('pass_yards', models.IntegerField(default=0)),
-                ('pass_completions', models.PositiveIntegerField(default=0)),
-                ('pass_attempts', models.PositiveIntegerField(default=0)),
-                ('completion_pct', models.DecimalField(decimal_places=2, max_digits=5)),
-                ('sacks', models.PositiveIntegerField(default=0)),
-                ('passing_touchdowns', models.PositiveIntegerField(default=0)),
-                ('interceptions', models.PositiveIntegerField(default=0)),
-                ('targets', models.PositiveIntegerField(default=0)),
-                ('receptions', models.PositiveIntegerField(default=0)),
-                ('receiving_yards', models.IntegerField(default=0)),
-                ('receiving_touchdowns', models.IntegerField(default=0)),
-                ('two_pt', models.PositiveIntegerField(default=0)),
-                ('fantasy_points', models.IntegerField(default=0)),
-                ('game', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='player_stats', to='games.game')),
-                ('player', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='game_stats', to='players.player')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("rush_attempts", models.PositiveIntegerField(default=0)),
+                ("rush_yards", models.IntegerField(default=0)),
+                ("rushing_touchdowns", models.PositiveIntegerField(default=0)),
+                ("fumbles", models.PositiveIntegerField(default=0)),
+                ("pass_yards", models.IntegerField(default=0)),
+                ("pass_completions", models.PositiveIntegerField(default=0)),
+                ("pass_attempts", models.PositiveIntegerField(default=0)),
+                ("completion_pct", models.DecimalField(decimal_places=2, max_digits=5)),
+                ("sacks", models.PositiveIntegerField(default=0)),
+                ("passing_touchdowns", models.PositiveIntegerField(default=0)),
+                ("interceptions", models.PositiveIntegerField(default=0)),
+                ("targets", models.PositiveIntegerField(default=0)),
+                ("receptions", models.PositiveIntegerField(default=0)),
+                ("receiving_yards", models.IntegerField(default=0)),
+                ("receiving_touchdowns", models.IntegerField(default=0)),
+                ("two_pt", models.PositiveIntegerField(default=0)),
+                ("fantasy_points", models.IntegerField(default=0)),
+                (
+                    "game",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="player_stats",
+                        to="games.game",
+                    ),
+                ),
+                (
+                    "player",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="game_stats",
+                        to="players.player",
+                    ),
+                ),
             ],
         ),
     ]

@@ -6,28 +6,28 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('games', '0004_rename_gametime_game_time'),
+        ("games", "0004_rename_gametime_game_time"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='game',
-            name='away_score',
+            model_name="game",
+            name="away_score",
             field=models.IntegerField(default=0, null=True),
         ),
         migrations.AlterField(
-            model_name='game',
-            name='home_score',
+            model_name="game",
+            name="home_score",
             field=models.IntegerField(default=0, null=True),
         ),
         migrations.AlterField(
-            model_name='game',
-            name='overtime',
+            model_name="game",
+            name="overtime",
             field=models.BooleanField(default=False, null=True),
         ),
         migrations.AlterField(
-            model_name='game',
-            name='total_score',
+            model_name="game",
+            name="total_score",
             field=models.IntegerField(default=0, null=True),
         ),
     ]

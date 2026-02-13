@@ -7,27 +7,29 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='PredictionModelVersion',
+            name="PredictionModelVersion",
             fields=[
-                ('version', models.CharField(max_length=50, primary_key=True, serialize=False)),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('training_seasons', models.JSONField(default=list)),
-                ('training_samples', models.IntegerField(default=0)),
-                ('winner_accuracy', models.FloatField(default=0.0)),
-                ('spread_mae', models.FloatField(default=0.0)),
-                ('total_mae', models.FloatField(default=0.0)),
-                ('winner_model_path', models.CharField(blank=True, max_length=255)),
-                ('spread_model_path', models.CharField(blank=True, max_length=255)),
-                ('total_model_path', models.CharField(blank=True, max_length=255)),
-                ('is_active', models.BooleanField(default=False)),
+                (
+                    "version",
+                    models.CharField(max_length=50, primary_key=True, serialize=False),
+                ),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("training_seasons", models.JSONField(default=list)),
+                ("training_samples", models.IntegerField(default=0)),
+                ("winner_accuracy", models.FloatField(default=0.0)),
+                ("spread_mae", models.FloatField(default=0.0)),
+                ("total_mae", models.FloatField(default=0.0)),
+                ("winner_model_path", models.CharField(blank=True, max_length=255)),
+                ("spread_model_path", models.CharField(blank=True, max_length=255)),
+                ("total_model_path", models.CharField(blank=True, max_length=255)),
+                ("is_active", models.BooleanField(default=False)),
             ],
             options={
-                'ordering': ['-created_at'],
+                "ordering": ["-created_at"],
             },
         ),
     ]

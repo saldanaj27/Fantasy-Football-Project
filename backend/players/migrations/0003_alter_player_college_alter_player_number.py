@@ -6,18 +6,18 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('players', '0002_remove_player_team_delete_userplayer'),
+        ("players", "0002_remove_player_team_delete_userplayer"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='player',
-            name='college',
+            model_name="player",
+            name="college",
             field=models.CharField(max_length=100, null=True),
         ),
         migrations.AlterField(
-            model_name='player',
-            name='number',
+            model_name="player",
+            name="number",
             field=models.IntegerField(default=0, null=True),
         ),
     ]

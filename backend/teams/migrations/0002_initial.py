@@ -11,17 +11,19 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('teams', '0001_initial'),
+        ("teams", "0001_initial"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='userteam',
-            name='user',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL),
+            model_name="userteam",
+            name="user",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL
+            ),
         ),
         migrations.AlterUniqueTogether(
-            name='userteam',
-            unique_together={('user', 'team')},
+            name="userteam",
+            unique_together={("user", "team")},
         ),
     ]

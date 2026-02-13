@@ -11,31 +11,78 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('teams', '0004_remove_team_alternate_color_remove_team_color'),
+        ("teams", "0004_remove_team_alternate_color_remove_team_color"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Player',
+            name="Player",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=100)),
-                ('number', models.IntegerField(default=0)),
-                ('college', models.CharField(max_length=100)),
-                ('position', models.CharField(choices=[('QB', 'Quarterback'), ('RB', 'Running Back'), ('WR', 'Wide Receiver'), ('TE', 'Tight End'), ('K', 'Kicker'), ('DEF', 'Defense')], max_length=20)),
-                ('image_url', models.URLField(blank=True, null=True)),
-                ('team', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='players', to='teams.team')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=100)),
+                ("number", models.IntegerField(default=0)),
+                ("college", models.CharField(max_length=100)),
+                (
+                    "position",
+                    models.CharField(
+                        choices=[
+                            ("QB", "Quarterback"),
+                            ("RB", "Running Back"),
+                            ("WR", "Wide Receiver"),
+                            ("TE", "Tight End"),
+                            ("K", "Kicker"),
+                            ("DEF", "Defense"),
+                        ],
+                        max_length=20,
+                    ),
+                ),
+                ("image_url", models.URLField(blank=True, null=True)),
+                (
+                    "team",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="players",
+                        to="teams.team",
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='UserPlayer',
+            name="UserPlayer",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('player', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='players.player')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "player",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="players.player"
+                    ),
+                ),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
             options={
-                'unique_together': {('user', 'player')},
+                "unique_together": {("user", "player")},
             },
         ),
     ]

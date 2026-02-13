@@ -7,20 +7,38 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('players', '0002_remove_player_team_delete_userplayer'),
-        ('teams', '0004_remove_team_alternate_color_remove_team_color'),
+        ("players", "0002_remove_player_team_delete_userplayer"),
+        ("teams", "0004_remove_team_alternate_color_remove_team_color"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Team_Players',
+            name="Team_Players",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('player', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='players.player')),
-                ('team', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='teams.team')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "player",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="players.player"
+                    ),
+                ),
+                (
+                    "team",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="teams.team"
+                    ),
+                ),
             ],
         ),
         migrations.DeleteModel(
-            name='UserTeam',
+            name="UserTeam",
         ),
     ]

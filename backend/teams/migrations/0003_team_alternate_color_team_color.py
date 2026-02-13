@@ -6,18 +6,18 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('teams', '0002_initial'),
+        ("teams", "0002_initial"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='team',
-            name='alternate_color',
-            field=models.CharField(default='#ffffff', max_length=15),
+            model_name="team",
+            name="alternate_color",
+            field=models.CharField(default="#ffffff", max_length=15),
         ),
         migrations.AddField(
-            model_name='team',
-            name='color',
-            field=models.CharField(default='#000000', max_length=15),
+            model_name="team",
+            name="color",
+            field=models.CharField(default="#000000", max_length=15),
         ),
     ]

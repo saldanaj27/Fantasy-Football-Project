@@ -7,76 +7,84 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('teams', '0006_delete_team_players'),
-        ('games', '0002_delete_usergame'),
+        ("teams", "0006_delete_team_players"),
+        ("games", "0002_delete_usergame"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='game',
-            name='status',
+            model_name="game",
+            name="status",
         ),
         migrations.AddField(
-            model_name='game',
-            name='gametime',
-            field=models.CharField(default='00:00', max_length=10),
+            model_name="game",
+            name="gametime",
+            field=models.CharField(default="00:00", max_length=10),
         ),
         migrations.AddField(
-            model_name='game',
-            name='location',
-            field=models.CharField(default='Home', max_length=15),
+            model_name="game",
+            name="location",
+            field=models.CharField(default="Home", max_length=15),
         ),
         migrations.AddField(
-            model_name='game',
-            name='overtime',
+            model_name="game",
+            name="overtime",
             field=models.BooleanField(default=False),
         ),
         migrations.AddField(
-            model_name='game',
-            name='roof',
-            field=models.CharField(default='outdoors', max_length=15),
+            model_name="game",
+            name="roof",
+            field=models.CharField(default="outdoors", max_length=15),
         ),
         migrations.AddField(
-            model_name='game',
-            name='temp',
+            model_name="game",
+            name="temp",
             field=models.IntegerField(default=0, null=True),
         ),
         migrations.AddField(
-            model_name='game',
-            name='total_score',
+            model_name="game",
+            name="total_score",
             field=models.IntegerField(default=0),
         ),
         migrations.AddField(
-            model_name='game',
-            name='wind',
+            model_name="game",
+            name="wind",
             field=models.IntegerField(default=0, null=True),
         ),
         migrations.AlterField(
-            model_name='game',
-            name='away_score',
+            model_name="game",
+            name="away_score",
             field=models.IntegerField(default=0),
         ),
         migrations.AlterField(
-            model_name='game',
-            name='away_team',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='away_team', to='teams.team'),
+            model_name="game",
+            name="away_team",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="away_team",
+                to="teams.team",
+            ),
         ),
         migrations.AlterField(
-            model_name='game',
-            name='home_score',
+            model_name="game",
+            name="home_score",
             field=models.IntegerField(default=0),
         ),
         migrations.AlterField(
-            model_name='game',
-            name='home_team',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='home_team', to='teams.team'),
+            model_name="game",
+            name="home_team",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="home_team",
+                to="teams.team",
+            ),
         ),
         migrations.AlterField(
-            model_name='game',
-            name='id',
+            model_name="game",
+            name="id",
             field=models.CharField(max_length=20, primary_key=True, serialize=False),
         ),
         migrations.DeleteModel(
-            name='Score',
+            name="Score",
         ),
     ]

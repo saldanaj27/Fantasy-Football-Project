@@ -6,18 +6,18 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('stats', '0002_remove_footballplayergamestat_completion_pct_and_more'),
+        ("stats", "0002_remove_footballplayergamestat_completion_pct_and_more"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='footballplayergamestat',
-            name='fantasy_points_ppr',
+            model_name="footballplayergamestat",
+            name="fantasy_points_ppr",
             field=models.FloatField(default=0.0),
         ),
         migrations.AddField(
-            model_name='footballplayergamestat',
-            name='sacks_yds_loss',
+            model_name="footballplayergamestat",
+            name="sacks_yds_loss",
             field=models.IntegerField(default=0),
         ),
     ]

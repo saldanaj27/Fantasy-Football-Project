@@ -11,45 +11,136 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('teams', '0004_remove_team_alternate_color_remove_team_color'),
+        ("teams", "0004_remove_team_alternate_color_remove_team_color"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Score',
+            name="Score",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('quarter_1', models.IntegerField(default=0)),
-                ('quarter_2', models.IntegerField(default=0)),
-                ('quarter_3', models.IntegerField(default=0)),
-                ('quarter_4', models.IntegerField(default=0)),
-                ('overtime', models.IntegerField(default=0)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("quarter_1", models.IntegerField(default=0)),
+                ("quarter_2", models.IntegerField(default=0)),
+                ("quarter_3", models.IntegerField(default=0)),
+                ("quarter_4", models.IntegerField(default=0)),
+                ("overtime", models.IntegerField(default=0)),
             ],
         ),
         migrations.CreateModel(
-            name='Game',
+            name="Game",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('date', models.DateTimeField()),
-                ('week', models.IntegerField(default=0)),
-                ('season', models.IntegerField(default=0)),
-                ('stage', models.CharField(choices=[('PRE', 'Pre Season'), ('REG', 'Regular Season'), ('POST', 'Post Season}')], default='REG', max_length=20)),
-                ('status', models.CharField(choices=[('NS', 'Not Started'), ('Q1', 'First Quarter'), ('Q2', 'Second Quarter'), ('Q3', 'Third Quarter'), ('OT', 'Overtime'), ('HT', 'Halftime'), ('FT', 'Finished'), ('CANC', 'Canceled'), ('PST', 'Postponed')], default='NS', max_length=20)),
-                ('away_score', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='away_score', to='games.score')),
-                ('away_team', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='away_games', to='teams.team')),
-                ('home_score', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='home_score', to='games.score')),
-                ('home_team', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='home_games', to='teams.team')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("date", models.DateTimeField()),
+                ("week", models.IntegerField(default=0)),
+                ("season", models.IntegerField(default=0)),
+                (
+                    "stage",
+                    models.CharField(
+                        choices=[
+                            ("PRE", "Pre Season"),
+                            ("REG", "Regular Season"),
+                            ("POST", "Post Season}"),
+                        ],
+                        default="REG",
+                        max_length=20,
+                    ),
+                ),
+                (
+                    "status",
+                    models.CharField(
+                        choices=[
+                            ("NS", "Not Started"),
+                            ("Q1", "First Quarter"),
+                            ("Q2", "Second Quarter"),
+                            ("Q3", "Third Quarter"),
+                            ("OT", "Overtime"),
+                            ("HT", "Halftime"),
+                            ("FT", "Finished"),
+                            ("CANC", "Canceled"),
+                            ("PST", "Postponed"),
+                        ],
+                        default="NS",
+                        max_length=20,
+                    ),
+                ),
+                (
+                    "away_score",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="away_score",
+                        to="games.score",
+                    ),
+                ),
+                (
+                    "away_team",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="away_games",
+                        to="teams.team",
+                    ),
+                ),
+                (
+                    "home_score",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="home_score",
+                        to="games.score",
+                    ),
+                ),
+                (
+                    "home_team",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="home_games",
+                        to="teams.team",
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='UserGame',
+            name="UserGame",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('game', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='games.game')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "game",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="games.game"
+                    ),
+                ),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
             options={
-                'unique_together': {('user', 'game')},
+                "unique_together": {("user", "game")},
             },
         ),
     ]
